@@ -86,7 +86,7 @@ const Contact = () => {
 </li>
 							<li className="phone"><a href="tel://+261 34 88 227 83">+261 34 88 227 83</a></li>
 							<li className="email"><a href="mailto:info@yoursite.com">seminairetheo@yahoo.fr</a></li>
-							<li className="url"><a href=" http://192.168.253.221:3000"> 192.168.91.221:3000  </a></li>
+							<li className="url"><a href=" http://192.168.253.221:3000">www.gstf-faliarivo.org</a></li>
 						</ul>
 					</div>
 				</div>
