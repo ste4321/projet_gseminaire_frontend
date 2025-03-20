@@ -1,6 +1,6 @@
 import useScripts from "./hooks/useScripts";
 import Home from "./pages/Home";
-import ReadMore from "./pages/ReadMore";
+import ReadMore from "./components/ReadMore";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
