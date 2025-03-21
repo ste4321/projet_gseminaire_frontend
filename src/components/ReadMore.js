@@ -6,7 +6,12 @@ Modal.setAppElement('#root'); // Important pour l'accessibilité
 const ReadMore = ({ isOpen, onRequestClose }) => {
   // État pour gérer le style du contenu avec transition
   const [contentStyle, setContentStyle] = useState({
-    // position: 'relative',
+    width: '82%', // Utilise un pourcentage pour s'adapter à la taille de l'écran
+    maxWidth: '1000px', // Largeur maximale pour éviter qu'il ne soit trop large
+    margin: '2rem auto', // Centre horizontalement
+    // padding: '50px',
+    borderRadius: '5px',
+  // position: 'relative',
     // width: '90%',
     // maxWidth: '900px',
     // margin: '2rem auto',
@@ -104,8 +109,10 @@ const ReadMore = ({ isOpen, onRequestClose }) => {
 
       <div className="readmore-container">
         <header className="readmore-header">
-          <h1>Présentation Générale</h1>
-          <p className="sub">Les éducateurs du Grand Séminaire de Théologie à Faliarivo</p>
+          <h1 style={{ textAlign:'center'}}>Présentation Générale</h1>
+          <p className="sub"   style={{ textAlign:'center'}}>
+            Si vous ne croyez pas, vous ne comprendrez pas (Is 7, 9).
+          </p>
         </header>
 
         <section className="readmore-intro">
@@ -121,7 +128,7 @@ const ReadMore = ({ isOpen, onRequestClose }) => {
             </p>
           </div>
         </section>
-
+        <br/>
         <section className="readmore-content">
           <p>
           Malgré le souvenir attendri du bon vieux temps où tous les candidats au sacerdoce, du Cap d’Ambre au Cap Sainte Marie, effectuaient leurs études canoniques au Grand Séminaire Saint Pierre, d’Ambatoroka, tout de granit, ou presque – et ceci depuis le 21 novembre 1929 – inauguration le 3 avril 1930 – étant donné que toute vie réussie dure, croît et déborde, la Conférence Épiscopale de Madagascar estima le moment venu de procéder à la décentralisation. Pour l’Archidiocèse du Centre, les cours de Philosophie émigrèrent à Antsirabe en 1986. Les cours de Théologie s’accommodèrent des locaux du Lycée Agricole d’Ambatobe…Atterrissage en catastrophe ? Voici le rappel de quelques-unes des moult péripéties qui ont abouti à ce dépaysement.
