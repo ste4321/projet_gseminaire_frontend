@@ -1,13 +1,12 @@
 import React from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-// import "./EquipeFormatrice.css"; // Assure-toi que ce chemin correspond à ton dossier CSS
 
 const equipe = [
   { role: "Recteur", nom: "P. RAFIDISON Abdon", tel: "+261 34 10 600 04" },
   { role: "Économe", nom: "P. RAMAROSANDRATANA Claude Rolland", tel: "+261 33 70 003 76" },
   { role: "Animateur spirituel", nom: "P. RAKOTOMAHEFA Jean Félicien", tel: "+261 34 68 210 54" },
-  { role: "Formateur", nom: "P. RATELOARISON Jean Athanase", tel: "+261 34 4170480" },
+  { role: "Formateur", nom: "P. RATELOARISON Jean Athanase", tel: "+261 34 41 704 80" },
   { role: "Préfet des Études", nom: "P. RAZAFINIARIVO Rodolphe Onjaniaina", tel: "+261 34 92 920 77" },
   { role: "Sœur intendante", nom: "Sr. RAZANAPARANY Angeline", tel: "+261 34 36 058 54" },
 ];

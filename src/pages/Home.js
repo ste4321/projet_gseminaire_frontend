@@ -9,6 +9,7 @@ import EquipeFormatrice from "../components/EquipeFormatrice";
 
 
 import { useEffect } from "react";
+import Info from "../components/Info";
 
 
 const Home = () => {
@@ -30,6 +31,7 @@ const Home = () => {
             <Practice />
             <Team />
             <EquipeFormatrice />
+            <Info />
             <Contact />
             <Footer />
             <FloatingCalendar />

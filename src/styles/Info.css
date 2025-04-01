@@ -1,0 +1,129 @@
+/* Liste principale */
+.folio-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .folio-list__item {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+  
+  @media screen and (max-width: 1000px) {
+    .folio-list__item {
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+  
+  /* Lien de l'élément */
+  .folio-list__item-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Effet hover pour l'ombre et changement de couleur du texte */
+  .folio-list__item-link:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .folio-list__item-link:hover .folio-list__item-text .folio-list__item-cat,
+  .folio-list__item-link:hover .folio-list__item-text .folio-list__item-title,
+  .folio-list__item-link:hover .folio-list__item-text .folio-list__item-date {
+    color: #6b4600f1; /* Couleur de survol */
+  }
+  
+  /* Texte de l'élément */
+  .folio-list__item-text {
+    padding: 10px;
+  }
+  
+  .folio-list__item-cat {
+    font-size: 14px;
+    color: #999;
+    font-style: italic;
+
+  }
+  
+  .folio-list__item-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px 0;
+    margin-left: 10px;
+    
+  }
+  
+  .folio-list__item-date {
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+
+  }
+  
+  /* Lien de projet (flèche) */
+  .folio-list__proj-link {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #333;
+  }
+  
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    top: 30px;
+    background: #fff;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    max-height:70vh;  /* Limite la hauteur pour les écrans et contenu long */
+    overflow-y: auto;  /* Ajoute un scroll vertical si nécessaire */
+    border-radius: 4px;
+    position: relative;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .close-button {
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .modal-body {
+    margin-top: 10px;
+  }
+  
+  .modal-footer {
+    margin-top: 20px;
+    text-align: right;
+    font-style: italic;
+  }
+  

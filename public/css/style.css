@@ -17,6 +17,8 @@ body {
   line-height: 1.8;
   color: #777;
   background: #fff;
+  overflow-x: hidden;
+  position: relative;
 }
 
 #page {
@@ -202,7 +204,7 @@ h1, h2, h3, h4, h5, h6, figure {
   font-size: 15px;
 }
 .gtco-nav ul li.has-dropdown .dropdown li a:hover {
-  color: #000;
+  color: #cadadb;
 }
 .gtco-nav ul li.has-dropdown .dropdown li.active > a {
   color: #000 !important;
@@ -216,7 +218,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-nav ul li.btn-cta a span {
   border: none !important;
   background: rgba(255, 255, 255, 0.2);
-  padding: 4px 20px;
+  padding: 8px 22px;
   display: -moz-inline-stack;
   display: inline-block;
   zoom: 1;
@@ -267,7 +269,7 @@ h1, h2, h3, h4, h5, h6, figure {
 .gtco-nav.scrolled ul li.btn-cta a span {
   border: none !important;
   background: #6b4600f1;
-  padding: 4px 20px;
+  padding: 6px 18px;
   color: #fff;
 }
 .gtco-nav.scrolled #gtco-logo em, .gtco-nav.scrolled #gtco-logo a {
@@ -433,6 +435,7 @@ h1, h2, h3, h4, h5, h6, figure {
 #gtco-about,
 #gtco-practice-areas,
 #gtco-our-team,
+#gtco-info,
 #gtco-contact {
   padding: 7em 0;
   clear: both;
@@ -1328,7 +1331,7 @@ form label {
 
 /* Conteneur principal avec fond gris */
 .equipe-container {
-  min-height: 100vh;
+  min-height: 10vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1390,14 +1393,14 @@ form label {
   background: rgba(255,255,255,0.9);
 }
 .custom-arrow-prev {
-  left: 10px;
+  left: 5px;
 }
 .custom-arrow-next {
-  right: 10px;
+  right: 5px;
 }
 .arrow-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   color: #333;
 }
 

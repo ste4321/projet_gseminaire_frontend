@@ -39,7 +39,7 @@ const About = () => {
                 Antsirabe en 1986...
               </p>
               <p>
-                <button onClick={openModal} className="read-more">
+                <button translate="no" onClick={openModal} className="read-more">
                   Voir plus <i className="icon-chevron-right"></i>
                 </button>
               </p>

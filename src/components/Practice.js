@@ -136,7 +136,7 @@ const Practice = () => {
                   <h3>La dimension humaine de la formation en vue du Sacerdoce</h3>
                   <p>
                   la formation humaine du prêtre revêt une importance particulière en raison de sa relation aux destinataires de sa mission. En effet, pour que son ministère soit humainement plus crédible et plus acceptable, il faut que le prêtre modèle sa personnalité humaine de façon à en faire un "pont" et non un obstacle pour les autres {' '}
-                    <a href="#!" onClick={() => openModal(details.detail1)}>
+                    <a href="#!" translate="no" onClick={() => openModal(details.detail1)}>
                       voir plus...
                     </a>
                   </p>
@@ -151,7 +151,7 @@ const Practice = () => {
                   <h3>La dimension spirituelle de la formation en vue du Sacerdoce</h3>
                   <p>
                   La vie spirituelle concerne « la vie selon l’Esprit Saint » (Rm 8,9), « une vie animée et guidée par l’Esprit Saint vers la sainteté et la perfection de la charité » (Pastores Dabo Vobis N°19). Appliquée à la vie du prêtre, une spiritualité ainsi conçue met au premier plan l’Esprit Saint qui le pousse et le conduit à la consécration et à la mission sacerdotale du Christ.{' '}
-                    <a href="#!" onClick={() => openModal(details.detail2)}>
+                    <a href="#!" translate="no" onClick={() => openModal(details.detail2)}>
                       voir plus...
                     </a>
                   </p>
@@ -170,7 +170,7 @@ const Practice = () => {
                   </h3>
                   <p>
                   Il est dit dans le rite d’ordination sacerdotale : « Tu veux, Seigneur, que ton peuple tout entier participe au sacerdoce de ton Fils ; et Tu confies à certains de ses membres la charge de le sanctifier, de le conduire et de l’enseigner au nom du Christ. Accorde à N., dont Tu vas faire son prêtre, la grâce d’être fidèle à sa mission.{' '}
-                    <a href="#!" onClick={() => openModal(details.detail3)}>
+                    <a href="#!" translate="no" onClick={() => openModal(details.detail3)}>
                       voir plus...
                     </a>
                   </p>
@@ -185,7 +185,7 @@ const Practice = () => {
                   <h3>La dimension pastorale de la formation en vue du Sacerdoce</h3>
                   <p>
                   Toute la formation sacerdotale est en vue de la pastorale. L’exhortation post-synodale du Pape Jean-Paul II est explicite sur ce point : « toute la formation des candidats au sacerdoce est destinée à les disposer d'une façon plus particulière à communier à la charité du Christ Bon Pasteur. Cette formation doit donc, dans ses divers aspects,{' '}
-                    <a href="#!" onClick={() => openModal(details.detail4)}>
+                    <a href="#!" translate="no" onClick={() => openModal(details.detail4)}>
                       voir plus...
                     </a>
                   </p>

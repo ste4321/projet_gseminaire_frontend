@@ -1,9 +1,8 @@
-import { NavLink } from "react-router";
-import { FaUser } from 'react-icons/fa'; // Icône utilisateur
 import { useState } from "react";
+import { FaUser } from 'react-icons/fa'; // Icône utilisateur
 
-const Footer = () => {
-	const [isModalOpen, setIsModalOpen] = useState(false);
+const Login = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const openModal = (e) => {
       e.preventDefault();
@@ -14,31 +13,15 @@ const Footer = () => {
       setIsModalOpen(false);
     };
     return (
-    <>
-        <footer id="gtco-footer" role="contentinfo">
-		<div className="container">
-			
-			<div className="row copyright">
-				<div className="col-md-12">
-					<p className="pull-left">
-						 <small className="block">Copyright Grand Séminaire de Théologie Faliarivo <NavLink to="/">G.S.T.F 2025</NavLink></small>
-					</p>
-						<ul className="gtco-social-icons pull-right">
-							<li><NavLink to="/"><i className="icon-twitter"></i></NavLink></li>
-							<li><NavLink to="/"><i className="icon-facebook"></i></NavLink></li>
-							<li>
-								<button translate="no" onClick={openModal} className="icon-btn">
-									<FaUser size={20} />
-								</button>
-							</li>
-							<li><NavLink to="/"><i className="icon-linkedin"></i></NavLink></li>
-							<li><NavLink to="/"><i className="icon-dribbble"></i></NavLink></li>
-							
-						</ul>
-				</div>
-			</div>
-		</div>
-		<style>
+        <>
+<div className="col-sm-6 col-xs-12 text-right">
+              <div className="login-icon" style={{padding: '4px'}}>
+                  <button onClick={openModal} className="icon-btn">
+                    <FaUser size={20} />
+                  </button>
+              </div>
+            </div>
+            <style>
         {`
         .login-icon {
           display: inline-block;
@@ -51,7 +34,7 @@ const Footer = () => {
           border: none;
           cursor: pointer;
           font-size: 1.2em;
-          color: #6b4600f1;
+          color:rgb(190, 190, 190);
           transition: color 0.3s;
         }
 
@@ -180,10 +163,10 @@ const Footer = () => {
       </div>
       
       )}
-	</footer> 
-    </>
+
+        </>
     );
   };
   
-  export default Footer;
+  export default Login;
   

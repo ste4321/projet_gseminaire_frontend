@@ -12,7 +12,7 @@ const Retour = () => {
 
   return (
     <nav className="retour-nav">
-      <button onClick={handleRetour} className="retour-btn">
+      <button translate="no" onClick={handleRetour} className="retour-btn">
         <FontAwesomeIcon icon={faHome} /> Retour
       </button>
     </nav>
