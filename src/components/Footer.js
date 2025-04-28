@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import { FaUser } from 'react-icons/fa'; // Icône utilisateur
-import { useState } from "react";
+import React, { useState } from "react";
 
 const Footer = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -120,7 +120,7 @@ const Footer = () => {
               <label htmlFor="email" style={{ fontWeight: 'bold', color: '#555' }}>Email</label>
               <input
                 type="email"
-                // id="email"
+                id="email"
                 placeholder="Entrez votre email"
                 required
                 style={{

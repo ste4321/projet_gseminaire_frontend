@@ -6,9 +6,7 @@ import Practice from "../components/Practice";
 import Team from "../components/Team";
 import FloatingCalendar from "../components/FloatingCalendar";
 import EquipeFormatrice from "../components/EquipeFormatrice";
-
-
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import Info from "../components/Info";
 
 
