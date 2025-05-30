@@ -24,7 +24,9 @@ const FloatingButton = styled.div`
   }
 `;
 
-const Overlay = styled.div`
+const Overlay = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "active"
+})`
   position: fixed;
   top: 0;
   left: 0;
@@ -39,7 +41,9 @@ const Overlay = styled.div`
   justify-content: flex-end;
 `;
 
-const EventModal = styled.div`
+const EventModal = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "active"
+})`
   background: #fff;
   width: 550px;
   height: 100%;
@@ -55,6 +59,7 @@ const EventModal = styled.div`
     width: 100%;
   }
 `;
+
 
 const ModalHeader = styled.div`
   display: flex;

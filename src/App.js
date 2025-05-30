@@ -1,6 +1,5 @@
 import useScripts from "./hooks/useScripts";
 import Home from "./pages/Home";
-import ReadMore from "./components/ReadMore";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -18,8 +17,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />}/>
-        <Route path="/voir-plus" element={<ReadMore />}/>
+        <Route path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

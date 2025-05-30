@@ -38,9 +38,14 @@ const Nav = () => {
                     Informations
                   </a>
                 </li>
-                <li className="btn-cta">
+                <li>
                   <a href="/contact" data-nav-section="contact">
-                  <span>Contact</span>
+                    Contact
+                  </a>
+                </li>
+                <li className="btn-cta">
+                  <a href="#" data-nav-section="contact">
+                  <span>Se connecter</span>
                   </a>
                 </li>
               </ul>
