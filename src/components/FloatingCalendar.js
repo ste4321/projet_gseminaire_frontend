@@ -154,7 +154,7 @@ const FloatingCalendar = () => {
       <Overlay active={showEvents} onClick={() => setShowEvents(false)}>
         <EventModal active={showEvents} onClick={(e) => e.stopPropagation()}>
           <ModalHeader>
-            <h2>Calendrier des événements</h2>
+            <h2>CALENDRIER ACADEMIQUE 2025-2026</h2>
             <CloseBtn
               icon={faTimes}
               className="close-btn"
@@ -163,72 +163,79 @@ const FloatingCalendar = () => {
           </ModalHeader>
           <ModalContent>
             <ContentSection>
-              <h3>PREMIER SEMESTRE : 26 septembre 2024 – 08 février 2025</h3>
+              <h3>PREMIER SEMESTRE : 25 septembre 2025 au 07 février 2026</h3>
               <ul>
                 <li>
-                  <span className="date">26 septembre :</span> rentrée des internes
+                  <span className="date">Jeudi 26 septembre :</span> rentrée des internes
                 </li>
                 <li>
-                  <span className="date">30 septembre :</span> réunion de tous les étudiants +
-                  Messe du Saint-Esprit
+                  <span className="date">Lundi 29 septembre :</span> réunion de tous les étudiants à 08h + Messe du Saint-Esprit à 10h
                 </li>
                 <li>
-                  <span className="date">27 octobre :</span> fête patronale et Ordre mineur
+                  <span className="date">Dimanche 26 octobre :</span> fête patronale et Ordre mineur
                 </li>
                 <li>
-                  <span className="date">1er novembre :</span> la Toussaint (pas de cours)
+                  <span className="date">Samedi 01 novembre :</span> la Toussaint (pas de cours)
                 </li>
                 <li>
-                  <span className="date">20 décembre :</span> vacances de Noël
+                  <span className="date">Mercredi 17 décembre :</span> vacances de Noël (après-midi)
                 </li>
                 <li>
-                  <span className="date">3 janvier :</span> rentrée des internes
+                  <span className="date">Samedi 03 janvier :</span> rentrée des internes
                 </li>
                 <li>
-                  <span className="date">4 janvier :</span> reprise des cours
+                  <span className="date">Lundi 05 janvier :</span> reprise des cours
                 </li>
                 <li>
-                  <span className="date">27 janvier au 5 février :</span> examens semestriels
+                  <span className="date">Du 22 janvier au 04 février :</span> examens semestriels
                 </li>
                 <li>
-                  <span className="date">7 au 8 février :</span> symposium
+                  <span className="date">Vendredi 06 et samedi 07 février :</span> symposium
                 </li>
               </ul>
             </ContentSection>
 
             <ContentSection>
-              <h3>DEUXIÈME SEMESTRE : 10 février - 20 juin 2025</h3>
+              <h3>DEUXIEME SEMESTRE : du 09 février au 19 juin 2026</h3>
               <ul>
                 <li>
-                  <span className="date">10 février :</span> début des cours
+                  <span className="date">Lundi 09 février :</span> début des cours
                 </li>
                 <li>
-                  <span className="date">9 avril :</span> vacances de Pâques
+                  <span className="date">Jeudi 26 mars :</span> vacances de Pâques
                 </li>
                 <li>
-                  <span className="date">24 avril :</span> rentrée des internes
+                  <span className="date">Jeudi 09 avril :</span> rentrée des internes
                 </li>
                 <li>
-                  <span className="date">25 avril :</span> reprise des cours
+                  <span className="date">Vendredi 10 avril :</span> reprise des cours
                 </li>
                 <li>
-                  <span className="date">29 mai :</span> Ascension
+                  <span className="date">Jeudi 14 mai :</span> Ascension (excursion)
                 </li>
                 <li>
-                  <span className="date">6-18 juin :</span> examens semestriels
+                  <span className="date">Dimanche 17 mai :</span> sakafom-pitiavana
                 </li>
                 <li>
-                  <span className="date">9 juin :</span> lundi de Pentecôte
+                  <span className="date">Lundi 24 mai :</span> lundi de Pentecôte
                 </li>
                 <li>
-                  <span className="date">19 juin :</span> réunion des Enseignants
+                  <span className="date">Du 05 juin au 17 juin :</span>examens semestriels
                 </li>
                 <li>
-                  <span className="date">20 juin :</span> clôture de l’année académique par la
-                  Sainte Messe
+                  <span className="date">Mercredi 17 juin :</span> grand oral
                 </li>
                 <li>
-                  <span className="date">25 septembre :</span> rentrée 2025-2026
+                  <span className="date">Jeudi 11 juin :</span> réunion des Educateurs avec les Responsables des Foyers 
+                </li>
+                <li>
+                  <span className="date">Jeudi 18 juin :</span> réunion des Enseignants
+                </li>
+                <li>
+                  <span className="date">Vendredi 19 juin :</span> clôture de l’année académique par la Sainte Messe
+                </li>
+                <li>
+                  <span className="date">Jeudi 24 septembre :</span> rentrée 2026-2027
                 </li>
               </ul>
             </ContentSection>
