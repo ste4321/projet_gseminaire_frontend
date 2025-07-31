@@ -29,7 +29,7 @@ const About = () => {
               </div>
             </div>
             <div className="col-md-6 animate-box" data-animate-effect="fadeInLeft">
-              <h2 className="heading-colored">Grand Séminaire Faliarivo</h2>
+              <h2 className="heading-colored">Grand Séminaire de Théologie Faliarivo</h2>
               <p>
                 Malgré le souvenir attendri du bon vieux temps où tous les candidats au sacerdoce,
                 du Cap d’Ambre au Cap Sainte Marie, effectuaient leurs études canoniques au Grand Séminaire Saint Pierre,

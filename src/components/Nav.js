@@ -65,7 +65,7 @@ const Nav = () => {
             <div className="col-sm-2 col-xs-12">
               <div id="gtco-logo">
                 <a href="/" aria-label="Retour à l'accueil">
-                  Grand Séminaire
+                  G.S.T.F
                 </a>
               </div>
             </div>
