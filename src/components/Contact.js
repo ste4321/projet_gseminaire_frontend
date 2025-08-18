@@ -84,7 +84,7 @@ const Contact = () => {
 						<ul>
 							<li className="address">Grand Séminaire de Théologie <br /> Faliarivo-Ambanidia BP. 6047 <br /> 101 ANTANANARIVO - MADAGASCAR
 </li>
-							<li className="phone"><a href="tel://+261 34 88 227 83">+261 34 88 227 83</a></li>
+							<li className="phone"><a href="tel://+261 38 21 220 21">+261 38 21 220 21</a></li>
 							<li className="email"><a href="mailto:info@yoursite.com">seminairetheo@yahoo.fr</a></li>
 							<li className="url"><a href=" http://192.168.253.221:3000">www.gstf-faliarivo.org</a></li>
 						</ul>

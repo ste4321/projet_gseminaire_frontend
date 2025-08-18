@@ -134,8 +134,12 @@ const Nav = () => {
                   </a>
                 </li>
                 <li className="btn-cta">
-                  <a 
-                    onClick={handleMenuClick}
+                  <a
+                    href="https://www.gestion.gstf-faliarivo.ovh"
+                    onClick={(e) => {
+                      e.preventDefault(); // empêcher Bootstrap de bloquer
+                      window.open("https://www.gestion.gstf-faliarivo.ovh", "_blank", "noopener,noreferrer");
+                    }}
                   >
                     <span>Se connecter</span>
                   </a>
