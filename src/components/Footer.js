@@ -1,10 +1,7 @@
 import { NavLink } from "react-router";
-// import { FaUser } from 'react-icons/fa'; // Icône utilisateur
-import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom"; // ← Importer ici
+import React from "react";
 
 const Footer = () => {
-	const [isModalOpen, setIsModalOpen] = useState(false);
     return (
     <>
         <footer id="gtco-footer" role="contentinfo">

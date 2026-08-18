@@ -70,6 +70,9 @@ const ModalHeader = styled.div`
   padding: 15px;
   font-family: Arial, sans-serif;
   color: #333;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 
   h2 {
     font-size: 18px;

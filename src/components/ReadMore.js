@@ -120,6 +120,7 @@ const ReadMore = ({ isOpen, onRequestClose }) => {
             src="images/cc.jpg"
             className="readmore-img"
             alt="Grand Séminaire Faliarivo"
+            loading="lazy"
           />
           <div className="readmore-text">
             <h4>Grand Séminaire Faliarivo</h4>

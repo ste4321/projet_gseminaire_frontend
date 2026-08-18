@@ -25,7 +25,7 @@ const About = () => {
           <div className="row">
             <div className="col-md-6 col-md-pull-1 animate-box" data-animate-effect="fadeInLeft">
               <div className="img-shadow">
-                <img src="images/cc.jpg" className="img-responsive" alt="Free HTML5 Bootstrap Template by FreeHTML5.co" />
+                <img src="images/cc.jpg" className="img-responsive" alt="Grand Séminaire de Théologie Faliarivo" loading="lazy" />
               </div>
             </div>
             <div className="col-md-6 animate-box" data-animate-effect="fadeInLeft">

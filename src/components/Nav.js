@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Nav = () => {
-  const [infos, setInfos] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [unviewedCount, setUnviewedCount] = useState(0);
@@ -12,8 +11,7 @@ const Nav = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://127.0.0.1:8000/api/infos');
-        setInfos(response.data);
-        
+
         // Calculer le nombre d'infos non vues
         const savedViewedInfos = localStorage.getItem('viewedInfos');
         const viewedInfos = savedViewedInfos ? JSON.parse(savedViewedInfos) : [];
@@ -42,19 +40,9 @@ const Nav = () => {
     };
   }, []);
 
-  // Gestion du menu responsive
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   // Fermer le menu en cliquant sur un lien
   const handleMenuClick = () => {
     setIsMenuOpen(false);
-  };
-
-  // Déterminer la classe active basée sur l'URL actuelle
-  const getActiveClass = (path) => {
-    return window.location.pathname === path ? 'active' : '';
   };
 
   return (
@@ -71,51 +59,51 @@ const Nav = () => {
             </div>
             <div className="col-sm-10 col-xs-12 text-right menu-1 main-nav">
               <ul className={`menu-list ${isMenuOpen ? 'menu-open' : ''}`}>
-                <li className={getActiveClass('/home')}>
-                  <a 
-                    href="/home" 
+                <li>
+                  <a
+                    href="#gtco-hero"
                     data-nav-section="home"
                     onClick={handleMenuClick}
                   >
                     Accueil
                   </a>
                 </li>
-                <li className={getActiveClass('/about')}>
-                  <a 
-                    href="/about" 
+                <li>
+                  <a
+                    href="#gtco-about"
                     data-nav-section="about"
                     onClick={handleMenuClick}
                   >
                     À propos
                   </a>
                 </li>
-                <li className={getActiveClass('/practice-areas')}>
-                  <a 
-                    href="/practice-areas" 
+                <li>
+                  <a
+                    href="#gtco-practice-areas"
                     data-nav-section="practice-areas"
                     onClick={handleMenuClick}
                   >
                     Formation
                   </a>
                 </li>
-                <li className={getActiveClass('/our-team')}>
-                  <a 
-                    href="/our-team" 
+                <li>
+                  <a
+                    href="#gtco-our-team"
                     data-nav-section="our-team"
                     onClick={handleMenuClick}
                   >
                     Équipe
                   </a>
                 </li>
-                <li className={getActiveClass('/info')}>
-                  <a 
-                    href="/info" 
+                <li>
+                  <a
+                    href="#gtco-info"
                     data-nav-section="info"
                     onClick={handleMenuClick}
                   >
                     Info
                     {!loading && unviewedCount > 0 && (
-                      <span 
+                      <span
                         className="badge bg-danger ms-1"
                         title={`${unviewedCount} nouvelle${unviewedCount > 1 ? 's' : ''} information${unviewedCount > 1 ? 's' : ''}`}
                       >
@@ -124,9 +112,9 @@ const Nav = () => {
                     )}
                   </a>
                 </li>
-                <li className={getActiveClass('/contact')}>
-                  <a 
-                    href="/contact" 
+                <li>
+                  <a
+                    href="#gtco-contact"
                     data-nav-section="contact"
                     onClick={handleMenuClick}
                   >

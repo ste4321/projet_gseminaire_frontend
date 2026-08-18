@@ -15,7 +15,7 @@ const Team = () => {
                 <div className="row team-item gtco-team-reverse">
                     <div className="col-md-6 col-md-push-7 animate-box" data-animate-effect="fadeInRight">
                         <div className="img-shadow">
-                            <img src="images/Arriv俥 au GSTF.webp" className="img-responsive" alt="Free HTML5 Bootstrap Template by FreeHTML5.co" />
+                            <img src="images/arrivee-gstf.webp" className="img-responsive" alt="Arrivée au Grand Séminaire de Théologie Faliarivo" loading="lazy" />
                         </div>
                     </div>
                     <div className="col-md-6  col-md-pull-6 animate-box" data-animate-effect="fadeInRight">
@@ -31,7 +31,7 @@ const Team = () => {
                 <div className="row team-item gtco-team">
                     <div className="col-md-6 col-md-pull-1 animate-box"  data-animate-effect="fadeInLeft">
                         <div className="img-shadow">
-                            <img src="images/Messe pr俿id俥 par SEm le Cardinal.webp" className="img-responsive" alt="Free HTML5 Bootstrap Template by FreeHTML5.co" />
+                            <img src="images/messe-presidee-cardinal.webp" className="img-responsive" alt="Messe présidée par le Cardinal Pietro Parolin au Grand Séminaire" loading="lazy" />
                         </div>
                     </div>
                     <div className="col-md-6 animate-box" data-animate-effect="fadeInLeft">

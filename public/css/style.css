@@ -1271,6 +1271,15 @@ form label {
   text-align: center; /* Centre le texte sur mobile */
 }
 
+.readmore-content {
+  max-width: 700px; /* Largeur de lecture confortable pour du texte dense */
+  margin: 0 auto;
+}
+
+.readmore-content p {
+  margin-bottom: 1.4em;
+}
+
 /* Sur les écrans larges (tablettes et PC) */
 @media (min-width: 768px) {
   .readmore-intro {

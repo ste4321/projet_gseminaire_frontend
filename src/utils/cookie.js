@@ -1,7 +1,7 @@
 // utils/cookie.js
 export const setCookie = (name, value, days = 30) => {
     const expires = new Date(Date.now() + days * 86400000).toUTCString();
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
   };
   
   export const getCookie = (name) => {
