@@ -362,6 +362,15 @@ h1, h2, h3, h4, h5, h6, figure {
   right: 0;
   background: rgba(35, 35, 35, 0.5);
 }
+.gtco-cover-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
 .gtco-cover > .container {
   position: relative;
   z-index: 10;
@@ -815,7 +824,8 @@ form label {
   position: fixed;
   z-index: 1901;
   width: 270px;
-  background: black;
+  background: #fff;
+  box-shadow: -1px 0 8px rgba(0, 0, 0, 0.2);
   top: 0;
   right: 0;
   top: 0;
@@ -845,10 +855,10 @@ form label {
   transform: translateX(0px);
 }
 #gtco-offcanvas a {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.6);
 }
 #gtco-offcanvas a:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.9);
 }
 #gtco-offcanvas ul {
   padding: 0;

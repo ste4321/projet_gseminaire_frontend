@@ -11,3 +11,87 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Mode sombre : inversion des couleurs, avec réinversion des médias
+   pour qu'ils gardent un rendu naturel. */
+html.dark-mode {
+  background: #fff;
+  filter: invert(1) hue-rotate(180deg);
+  transition: filter 0.3s ease;
+}
+
+html.dark-mode img:not(.gtco-cover-bg),
+html.dark-mode video,
+html.dark-mode iframe {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* La bannière d'accueil (photo + surimpression sombre + texte blanc) est déjà
+   stylée "sombre" par défaut : on l'exempte donc en bloc de l'inversion pour
+   qu'elle garde son rendu d'origine plutôt que de paraître délavée.
+   La nav, elle-même transparente tant qu'elle survole la bannière (avant la
+   classe .scrolled ajoutée au scroll), suit la même exemption. */
+html.dark-mode #gtco-hero,
+html.dark-mode .gtco-nav:not(.scrolled) {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Fonds assombris (overlays) des popups/modals : ils doivent rester sombres
+   dans les deux thèmes plutôt que de virer au gris clair une fois inversés.
+   Comme le contenu du modal est imbriqué dans l'overlay, on lui applique le
+   même contre-filtre pour qu'il continue, lui, à suivre le thème normalement. */
+html.dark-mode .ReactModal__Overlay,
+html.dark-mode .modal-overlay,
+html.dark-mode .calendar-overlay,
+html.dark-mode body.offcanvas #page::after {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html.dark-mode .ReactModal__Content,
+html.dark-mode .modal-content,
+html.dark-mode .calendar-modal {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  transition: color 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  color: #8d5e08;
+}
+
+/* Sur desktop : bouton dans la barre de nav normale. */
+.theme-toggle-mobile {
+  display: none;
+}
+
+/* Sur mobile : le bouton de la liste de menu est caché (il est aussi cloné,
+   sans logique React, dans le panneau glissant jQuery et ne répondrait pas
+   au clic) ; un bouton fixe dédié apparaît à côté du bouton hamburger. */
+@media screen and (max-width: 768px) {
+  .theme-toggle-item {
+    display: none;
+  }
+
+  .theme-toggle-mobile {
+    display: flex;
+    position: fixed;
+    top: 10px;
+    right: 54px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    z-index: 2001;
+    background: none;
+    color: #252525;
+  }
+}

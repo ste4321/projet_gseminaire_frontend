@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FaMoon, FaSun } from 'react-icons/fa';
+
+const THEME_STORAGE_KEY = 'theme';
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [unviewedCount, setUnviewedCount] = useState(0);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-mode', isDark);
+    localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   useEffect(() => {
     const fetchInfos = async () => {
@@ -48,6 +61,15 @@ const Nav = () => {
   return (
     <>
       <nav className="gtco-nav" role="navigation">
+        <button
+          type="button"
+          className="theme-toggle-btn theme-toggle-mobile"
+          onClick={() => setIsDark((prev) => !prev)}
+          aria-label={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
+          title={isDark ? 'Mode clair' : 'Mode sombre'}
+        >
+          {isDark ? <FaSun size={16} /> : <FaMoon size={16} />}
+        </button>
         <div className="container">
           <div className="row">
             <div className="col-sm-2 col-xs-12">
@@ -121,6 +143,17 @@ const Nav = () => {
                     Contact
                   </a>
                 </li>
+                <li className="theme-toggle-item">
+                  <button
+                    type="button"
+                    className="theme-toggle-btn"
+                    onClick={() => setIsDark((prev) => !prev)}
+                    aria-label={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
+                    title={isDark ? 'Mode clair' : 'Mode sombre'}
+                  >
+                    {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
+                  </button>
+                </li>
                 <li className="btn-cta">
                   <a
                     href="https://www.gestion.gstf-faliarivo.ovh"
@@ -141,10 +174,10 @@ const Nav = () => {
       <section
         id="gtco-hero"
         className="gtco-cover"
-        style={{ backgroundImage: `url(/images/les_scolastiques.jpg)` }}
         data-section="home"
         data-stellar-background-ratio="0.5"
       >
+        <img src="/images/les_scolastiques.jpg" alt="" className="gtco-cover-bg" loading="eager" />
         <div className="overlay"></div>
         <div className="container">
           <div className="row">

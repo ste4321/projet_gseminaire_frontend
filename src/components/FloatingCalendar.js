@@ -154,8 +154,8 @@ const FloatingCalendar = () => {
         </FloatingButton>
       )}
 
-      <Overlay active={showEvents} onClick={() => setShowEvents(false)}>
-        <EventModal active={showEvents} onClick={(e) => e.stopPropagation()}>
+      <Overlay className="calendar-overlay" active={showEvents} onClick={() => setShowEvents(false)}>
+        <EventModal className="calendar-modal" active={showEvents} onClick={(e) => e.stopPropagation()}>
           <ModalHeader>
             <h2>CALENDRIER ACADEMIQUE 2025-2026</h2>
             <CloseBtn
