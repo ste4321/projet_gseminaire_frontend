@@ -1,6 +1,5 @@
 import React from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { FaPhoneAlt } from "react-icons/fa";
 
 const equipe = [
   { role: "Recteur", nom: "P. RAFIDISON Abdon", tel: "+261 34 10 600 04" },
@@ -11,67 +10,25 @@ const equipe = [
   { role: "Sœur intendante", nom: "Sr. RAZANAPARANY Angeline", tel: "+261 34 36 058 54" },
 ];
 
+// Toute l'équipe visible d'un coup ; numéros cliquables sur téléphone
 const EquipeFormatrice = () => {
   return (
-    <div className="equipe-container">
-      <div className="carousel-wrapper">
-        <h2 className="carousel-title">L’équipe formatrice</h2>
-        <Carousel
-          showThumbs={false}
-          infiniteLoop
-          autoPlay
-          interval={3000}
-          transitionTime={500}
-          showStatus={false}
-          renderArrowPrev={(onClickHandler, hasPrev, label) =>
-            hasPrev && (
-              <button
-                type="button"
-                onClick={onClickHandler}
-                className="custom-arrow custom-arrow-prev"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="arrow-icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            )
-          }
-          renderArrowNext={(onClickHandler, hasNext, label) =>
-            hasNext && (
-              <button
-                type="button"
-                onClick={onClickHandler}
-                className="custom-arrow custom-arrow-next"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="arrow-icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            )
-          }
-        >
-          {equipe.map((personne, index) => (
-            <div key={index} className="card">
-              <h3 className="card-title">{personne.role}</h3>
-              <p className="card-name">{personne.nom}</p>
-              <p className="card-tel">{personne.tel}</p>
-            </div>
+    <section className="team-list" aria-labelledby="team-list-title">
+      <div className="container">
+        <h2 id="team-list-title" className="team-list__title">L’équipe formatrice</h2>
+        <ul className="team-list__grid">
+          {equipe.map((personne) => (
+            <li key={personne.nom} className="team-list__card">
+              <p className="team-list__role">{personne.role}</p>
+              <p className="team-list__name">{personne.nom}</p>
+              <a className="team-list__tel" href={`tel:${personne.tel.replace(/\s/g, "")}`}>
+                <FaPhoneAlt size={12} aria-hidden="true" /> {personne.tel}
+              </a>
+            </li>
           ))}
-        </Carousel>
+        </ul>
       </div>
-    </div>
+    </section>
   );
 };
 

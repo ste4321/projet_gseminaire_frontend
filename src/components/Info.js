@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { setCookie, getCookie } from '../utils/cookie';
 import '../styles/Info.css';
+import { API_URL } from '../config';
 
 const Info = () => {
   const [infos, setInfos] = useState([]);
@@ -12,26 +13,26 @@ const Info = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Récupération des infos
-  useEffect(() => {
-    const fetchInfos = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('http://127.0.0.1:8000/api/infos');
-        setInfos(response.data);
-        setError(null);
+  const fetchInfos = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/infos`);
+      setInfos(response.data);
+      setError(null);
 
-        const cookieData = getCookie('viewedInfos');
-        if (cookieData) {
-          setViewedInfos(new Set(JSON.parse(cookieData)));
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des infos :", error);
-        setError("Impossible de charger les informations. Veuillez réessayer plus tard.");
-      } finally {
-        setLoading(false);
+      const cookieData = getCookie('viewedInfos');
+      if (cookieData) {
+        setViewedInfos(new Set(JSON.parse(cookieData)));
       }
-    };
+    } catch (error) {
+      console.error("Erreur lors du chargement des infos :", error);
+      setError("Les actualités ne sont pas disponibles pour le moment.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchInfos();
   }, []);
 
@@ -118,25 +119,6 @@ const Info = () => {
     );
   }
 
-  if (error) {
-    return (
-      <section id="gtco-info" data-section="info">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-8 col-md-offset-2 text-center">
-              <div className="error-message">
-                <p className="text-danger">{error}</p>
-                <button className="btn btn-primary" onClick={() => window.location.reload()}>
-                  Réessayer
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section id="gtco-info" data-section="info">
       <div className="container">
@@ -157,7 +139,18 @@ const Info = () => {
           </div>
         </div>
 
-        {infos.length === 0 ? (
+        {error ? (
+          <div className="row">
+            <div className="col-md-8 col-md-offset-2 text-center">
+              <p className="no-info">
+                {error}{' '}
+                <button type="button" className="info-retry" onClick={fetchInfos}>
+                  Réessayer
+                </button>
+              </p>
+            </div>
+          </div>
+        ) : infos.length === 0 ? (
           <div className="row">
             <div className="col-md-8 col-md-offset-2 text-center">
               <p className="no-info">Aucune information disponible pour le moment.</p>

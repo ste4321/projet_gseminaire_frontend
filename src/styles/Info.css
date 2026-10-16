@@ -127,3 +127,22 @@
     font-style: italic;
   }
   
+  .no-info {
+    color: #888;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .info-retry {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #8d5e08;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .info-retry:hover {
+    color: #6b4600;
+  }
