@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import { API_URL } from '../config';
 
 const THEME_STORAGE_KEY = 'theme';
 
@@ -23,7 +24,7 @@ const Nav = () => {
     const fetchInfos = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://127.0.0.1:8000/api/infos');
+        const response = await axios.get(`${API_URL}/infos`);
 
         // Calculer le nombre d'infos non vues
         const savedViewedInfos = localStorage.getItem('viewedInfos');
@@ -53,9 +54,29 @@ const Nav = () => {
     };
   }, []);
 
+  // Tant que la nav survole la bannière, les boutons mobiles (menu, thème)
+  // doivent être clairs pour rester visibles sur la photo.
+  useEffect(() => {
+    const updateAtTop = () => {
+      document.body.classList.toggle('at-top', window.scrollY <= 50);
+    };
+    updateAtTop();
+    window.addEventListener('scroll', updateAtTop, { passive: true });
+    return () => window.removeEventListener('scroll', updateAtTop);
+  }, []);
+
   // Fermer le menu en cliquant sur un lien
   const handleMenuClick = () => {
     setIsMenuOpen(false);
+  };
+
+  // Défilement doux vers une section, en tenant compte de la nav fixe
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    const target = document.getElementById(id);
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + window.scrollY - 55;
+    window.scrollTo({ top, behavior: 'smooth' });
   };
 
   return (
@@ -177,16 +198,38 @@ const Nav = () => {
         data-section="home"
         data-stellar-background-ratio="0.5"
       >
-        <img src="/images/les_scolastiques.jpg" alt="" className="gtco-cover-bg" loading="eager" />
+        <img src="/images/les_scolastiques.webp" alt="" className="gtco-cover-bg" loading="eager" />
         <div className="overlay"></div>
         <div className="container">
           <div className="row">
             <div className="col-md-12 col-md-offset-0 text-center">
               <div className="display-t">
                 <div className="display-tc">
-                  <h1 className="animate-box" data-animate-effect="fadeIn">
-                    « Soyez toujours prêts à justifier votre espérance » (1Pi 3, 15).
-                  </h1>
+                  <div className="hero-content animate-box" data-animate-effect="fadeIn">
+                    <p className="hero-kicker">Antananarivo · Madagascar</p>
+                    <h1>
+                      Grand Séminaire de Théologie <span>Faliarivo</span>
+                    </h1>
+                    <p className="hero-quote">
+                      « Soyez toujours prêts à justifier votre espérance » <cite>(1Pi 3, 15)</cite>
+                    </p>
+                    <div className="hero-actions">
+                      <a
+                        href="#gtco-practice-areas"
+                        className="hero-btn hero-btn-primary"
+                        onClick={(e) => scrollToSection(e, 'gtco-practice-areas')}
+                      >
+                        Découvrir la formation
+                      </a>
+                      <a
+                        href="#gtco-contact"
+                        className="hero-btn hero-btn-ghost"
+                        onClick={(e) => scrollToSection(e, 'gtco-contact')}
+                      >
+                        Nous contacter
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

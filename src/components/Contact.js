@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./../App.css";
+import { API_URL } from "../config";
 const Contact = () => {
 
     const [notification, setNotification] = useState({ message: "", type: "" });
@@ -17,7 +18,7 @@ const Contact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/postContact", {
+            const response = await fetch(`${API_URL}/postContact`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -49,7 +50,7 @@ const Contact = () => {
             <div className="container">
                 <div className="row row-pb-md">
                     <div className="col-md-8 col-md-offset-2 heading animate-box">
-                        <h1>Contacter Nous</h1>
+                        <h1>Contactez-nous</h1>
                         <p className="sub">Si vous ne croyez pas, vous ne comprendrez pas (Is 7, 9). </p>
                         {/* <p className="subtle-text animate-box">Contact</p> */}
                     </div>
@@ -58,19 +59,19 @@ const Contact = () => {
                     <div className="col-md-6 col-md-push-6 animate-box">
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label htmlFor="name" className="sr-only">Name</label>
-                                <input type="text" className="form-control" placeholder="Name" id="name" name="name" value={formData.name} onChange={handleChange} required />
+                                <label htmlFor="name" className="sr-only">Nom</label>
+                                <input type="text" className="form-control" placeholder="Votre nom" id="name" name="name" value={formData.name} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="email" className="sr-only">Email</label>
-                                <input type="email" className="form-control" placeholder="Email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+                                <label htmlFor="email" className="sr-only">Adresse e-mail</label>
+                                <input type="email" className="form-control" placeholder="Votre adresse e-mail" id="email" name="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="message" className="sr-only">Message</label>
-                                <textarea name="message" id="message" className="form-control" cols="30" rows="7" placeholder="Message" value={formData.message} onChange={handleChange} required></textarea>
+                                <textarea name="message" id="message" className="form-control" cols="30" rows="7" placeholder="Votre message" value={formData.message} onChange={handleChange} required></textarea>
                             </div>
                             <div className="form-group">
-                                <input type="submit" value=" Envoyer" className="btn btn-primary" />
+                                <input type="submit" value="Envoyer" className="btn btn-primary" />
                             </div>
                             {notification.message && (
                                 <div className={`notification ${notification.type}`}>
@@ -84,9 +85,9 @@ const Contact = () => {
 						<ul>
 							<li className="address">Grand Séminaire de Théologie <br /> Faliarivo-Ambanidia BP. 6047 <br /> 101 ANTANANARIVO - MADAGASCAR
 </li>
-							<li className="phone"><a href="tel://+261 38 21 220 21">+261 38 21 220 21</a></li>
-							<li className="email"><a href="mailto:info@yoursite.com">seminairetheo@yahoo.fr</a></li>
-							<li className="url"><a href=" http://192.168.253.221:3000">www.gstf-faliarivo.org</a></li>
+							<li className="phone"><a href="tel:+261382122021">+261 38 21 220 21</a></li>
+							<li className="email"><a href="mailto:seminairetheo@yahoo.fr">seminairetheo@yahoo.fr</a></li>
+							<li className="url"><a href="https://www.gstf-faliarivo.org" target="_blank" rel="noopener noreferrer">www.gstf-faliarivo.org</a></li>
 						</ul>
 					</div>
 				</div>

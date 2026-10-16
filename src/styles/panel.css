@@ -1,0 +1,389 @@
+/* =======================================================
+   Panneau de lecture latéral (SidePanel)
+   ======================================================= */
+
+.side-panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3100;
+  background: rgba(20, 14, 6, 0);
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+
+.side-panel-overlay.is-open {
+  background: rgba(20, 14, 6, 0.55);
+  pointer-events: auto;
+}
+
+.side-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 640px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%);
+  /* fermé : caché (sinon son ombre dépasse sur le bord droit de l'écran) */
+  visibility: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s linear 0.35s;
+}
+
+.side-panel-overlay.is-open .side-panel {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s;
+}
+
+/* ---------- En-tête ---------- */
+
+.side-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 26px 32px 20px;
+  border-bottom: 1px solid #eee4d3;
+  background: #fbf8f2;
+}
+
+.side-panel__eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand, #8d5e08);
+}
+
+.side-panel .side-panel__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--title, #1f1a14);
+}
+
+.side-panel__close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  margin: -4px -8px 0 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 30px;
+  line-height: 1;
+  color: #6b6b6b;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.side-panel__close:hover {
+  background: #efe6d6;
+  color: var(--brand-dark, #6b4600);
+}
+
+/* ---------- Contenu ---------- */
+
+.side-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px 36px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text, #4a4a4a);
+  -webkit-overflow-scrolling: touch;
+}
+
+.side-panel__body p {
+  margin: 0 0 18px;
+}
+
+.panel-quote {
+  margin: 8px 0 24px;
+  padding: 18px 22px;
+  border-left: 3px solid var(--brand, #8d5e08);
+  background: #faf6ee;
+  border-radius: 0 6px 6px 0;
+}
+
+.side-panel__body .panel-quote p {
+  margin: 0 0 10px;
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-style: italic;
+  line-height: 1.5;
+  color: #3b3226;
+}
+
+.panel-quote cite {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-dark, #6b4600);
+}
+
+.panel-list {
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.panel-list li {
+  position: relative;
+  padding: 0 0 14px 22px;
+}
+
+.panel-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.75em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand, #8d5e08);
+}
+
+.panel-list strong {
+  display: block;
+  color: var(--title, #1f1a14);
+}
+
+.panel-figure {
+  margin: 0 0 24px;
+}
+
+.panel-figure img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.panel-figure figcaption {
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-muted, #6b6b6b);
+}
+
+/* ---------- Pied : navigation précédent / suivant ---------- */
+
+.side-panel__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 32px;
+  border-top: 1px solid #eee4d3;
+  background: #fbf8f2;
+}
+
+.panel-nav-btn {
+  display: flex;
+  flex-direction: column;
+  max-width: 48%;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--brand-dark, #6b4600);
+}
+
+.panel-nav-btn--next {
+  margin-left: auto;
+  text-align: right;
+}
+
+.panel-nav-btn small {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #6b6b6b);
+}
+
+.panel-nav-btn span {
+  font-family: var(--font-title);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.panel-nav-btn:hover span {
+  text-decoration: underline;
+}
+
+/* ---------- Calendrier ---------- */
+
+.calendar-notice {
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  border-radius: 6px;
+  background: #faf6ee;
+  border: 1px solid #eee4d3;
+  font-size: 15px;
+}
+
+.calendar-semester {
+  margin-bottom: 30px;
+}
+
+.side-panel__body .calendar-semester h3 {
+  margin: 0 0 4px;
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--title, #1f1a14);
+}
+
+.side-panel__body .calendar-semester .calendar-range {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--text-muted, #6b6b6b);
+}
+
+.calendar-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid #eee4d3;
+}
+
+.calendar-item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding: 10px 0 10px 20px;
+}
+
+.calendar-item::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--brand, #8d5e08);
+}
+
+.calendar-date {
+  flex-shrink: 0;
+  width: 185px;
+  font-weight: 600;
+  color: var(--title, #1f1a14);
+  line-height: 1.5;
+}
+
+.calendar-label {
+  line-height: 1.5;
+}
+
+.calendar-item.is-past {
+  opacity: 0.55;
+}
+
+.calendar-item.is-next::before {
+  background: var(--brand, #8d5e08);
+}
+
+.calendar-item.is-next .calendar-date::after {
+  content: "Prochain";
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--brand, #8d5e08);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 768px) {
+  .side-panel {
+    width: 100%;
+  }
+  .side-panel__header {
+    padding: 18px 18px 14px;
+  }
+  .side-panel .side-panel__title {
+    font-size: 24px;
+  }
+  .side-panel__body {
+    padding: 20px 18px 28px;
+    font-size: 15.5px;
+  }
+  .side-panel__body .panel-quote p {
+    font-size: 18px;
+  }
+  .side-panel__footer {
+    padding: 12px 18px;
+  }
+  .panel-nav-btn span {
+    font-size: 17px;
+  }
+  .calendar-item {
+    flex-direction: column;
+    gap: 0;
+  }
+  .calendar-date {
+    width: auto;
+  }
+}
+
+/* ---------- Présentation : intertitres et repères ---------- */
+
+.side-panel__body .panel-heading {
+  margin: 8px 0 16px;
+  padding: 0;
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--title, #1f1a14);
+}
+
+.milestones {
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid #eee4d3;
+}
+
+.milestones li {
+  position: relative;
+  padding: 0 0 18px 20px;
+}
+
+.milestones li::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 7px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--brand, #8d5e08);
+}
+
+.milestones__date {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-dark, #6b4600);
+  line-height: 1.4;
+}
+
+.milestones__text {
+  display: block;
+  line-height: 1.6;
+}

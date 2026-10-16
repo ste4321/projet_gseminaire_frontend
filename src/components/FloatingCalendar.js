@@ -1,7 +1,77 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import SidePanel from "./SidePanel";
+
+// ---------------------------------------------------------------
+// Calendrier académique : modifier uniquement ces données.
+// Dates au format AAAA-MM-JJ ; le jour de la semaine est calculé.
+// « end » + « join » : "du" (période) ou "et" (deux jours).
+// ---------------------------------------------------------------
+const ACADEMIC_YEAR = "2025-2026";
+
+const semesters = [
+  {
+    title: "Premier semestre",
+    start: "2025-09-25",
+    end: "2026-02-07",
+    events: [
+      { date: "2025-09-25", label: "Rentrée des internes" },
+      { date: "2025-09-29", label: "Réunion de tous les étudiants à 8 h, puis Messe du Saint-Esprit à 10 h" },
+      { date: "2025-10-26", label: "Fête patronale et Ordre mineur" },
+      { date: "2025-11-01", label: "La Toussaint (pas de cours)" },
+      { date: "2025-12-17", label: "Vacances de Noël (l’après-midi)" },
+      { date: "2026-01-03", label: "Rentrée des internes" },
+      { date: "2026-01-05", label: "Reprise des cours" },
+      { date: "2026-01-22", end: "2026-02-04", join: "du", label: "Examens semestriels" },
+      { date: "2026-02-06", end: "2026-02-07", join: "et", label: "Symposium" },
+    ],
+  },
+  {
+    title: "Deuxième semestre",
+    start: "2026-02-09",
+    end: "2026-06-19",
+    events: [
+      { date: "2026-02-09", label: "Début des cours" },
+      { date: "2026-03-26", label: "Vacances de Pâques" },
+      { date: "2026-04-09", label: "Rentrée des internes" },
+      { date: "2026-04-10", label: "Reprise des cours" },
+      { date: "2026-05-14", label: "Ascension (excursion)" },
+      { date: "2026-05-17", label: "Sakafom-pitiavana" },
+      { date: "2026-05-25", label: "Lundi de Pentecôte" },
+      { date: "2026-06-05", end: "2026-06-17", join: "du", label: "Examens semestriels" },
+      { date: "2026-06-11", label: "Réunion des éducateurs avec les responsables des foyers" },
+      { date: "2026-06-17", label: "Grand oral" },
+      { date: "2026-06-18", label: "Réunion des enseignants" },
+      { date: "2026-06-19", label: "Clôture de l’année académique par la Sainte Messe" },
+      { date: "2026-09-24", label: "Rentrée 2026-2027" },
+    ],
+  },
+];
+
+// --- Mise en forme des dates -----------------------------------
+
+const toDate = (iso) => new Date(`${iso}T00:00:00Z`);
+const fmt = (iso, options) =>
+  toDate(iso).toLocaleDateString("fr-FR", { timeZone: "UTC", ...options });
+const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+
+const formatEventDate = ({ date, end, join }) => {
+  if (!end) return capitalize(fmt(date, { weekday: "long", day: "numeric", month: "long" }));
+  const sameMonth = date.slice(0, 7) === end.slice(0, 7);
+  if (join === "et") {
+    const first = fmt(date, sameMonth ? { weekday: "long", day: "numeric" } : { weekday: "long", day: "numeric", month: "long" });
+    return capitalize(`${first} et ${fmt(end, { weekday: "long", day: "numeric", month: "long" })}`);
+  }
+  const first = fmt(date, sameMonth ? { day: "numeric" } : { day: "numeric", month: "long" });
+  return `Du ${first} au ${fmt(end, { day: "numeric", month: "long" })}`;
+};
+
+const formatRange = (start, end) =>
+  `Du ${fmt(start, { day: "numeric", month: "long", year: "numeric" })} au ${fmt(end, { day: "numeric", month: "long", year: "numeric" })}`;
+
+// ---------------------------------------------------------------
 
 const FloatingButton = styled.div`
   position: fixed;
@@ -9,242 +79,110 @@ const FloatingButton = styled.div`
   right: 20px;
   width: 50px;
   height: 50px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(107, 70, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   cursor: pointer;
   z-index: 3000;
-  border-radius: 4px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   transition: transform 0.3s ease, opacity 0.3s ease;
 
   &:hover {
     transform: scale(1.1);
   }
+
+  /* Sur mobile, le calendrier passe dans la barre du haut (NavCalendarButton) */
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
-const Overlay = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== "active"
-})`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: ${({ active }) =>
-    active ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0)"};
-  pointer-events: ${({ active }) => (active ? "all" : "none")};
-  transition: background 0.3s ease;
-  z-index: 2999;
-  display: flex;
-  justify-content: flex-end;
-`;
 
-const EventModal = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== "active"
-})`
-  background: #fff;
-  width: 550px;
-  height: 100%;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  padding: 0;
-  overflow-y: auto;
-  z-index: 3000;
-  transform: ${({ active }) =>
-    active ? "translateX(0)" : "translateX(100%)"};
-  transition: transform 0.3s ease;
+// Bouton du calendrier sur mobile, à côté du bouton de thème
+const NavCalendarButton = styled.button`
+  display: none;
 
   @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f7f7f7;
-  border-bottom: 2px solid #ccc;
-  padding: 15px;
-  font-family: Arial, sans-serif;
-  color: #333;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-
-  h2 {
-    font-size: 18px;
-    margin: 0;
-
-    @media (max-width: 768px) {
-      font-size: 16px;
-    }
-  }
-`;
-
-const CloseBtn = styled(FontAwesomeIcon)`
-  cursor: pointer;
-  font-size: 22px;
-  color: rgb(63, 61, 60);
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.2);
-  }
-`;
-
-const ModalContent = styled.div`
-  padding: 15px;
-  font-family: Arial, sans-serif;
-  color: #333;
-
-  @media (max-width: 768px) {
-    padding: 12px;
-  }
-`;
-
-const ContentSection = styled.div`
-  background: #f7f7f7;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-bottom: 2px solid #ccc;
-
-  h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-  }
-
-  ul {
-    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 10px;
+    right: 98px;
+    width: 44px;
+    height: 44px;
     padding: 0;
-    margin-top: 10px;
-
-    li {
-      padding: 5px 0;
-      border-bottom: 1px solid #ddd;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      .date {
-        font-weight: 500;
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: 8px;
+    border: none;
+    background: none;
+    color: #252525;
+    cursor: pointer;
+    z-index: 2001;
   }
 `;
+
 
 const FloatingCalendar = () => {
   const [showEvents, setShowEvents] = useState(false);
 
+  // Événements passés grisés, prochain événement mis en avant
+  const today = new Date().toISOString().slice(0, 10);
+  const allEvents = semesters.flatMap((semester) => semester.events);
+  const nextEvent = allEvents.find((event) => (event.end || event.date) >= today);
+  const yearIsOver = !nextEvent;
+
   return (
     <>
-      {/* Bouton flottant */}
       {!showEvents && (
-        <FloatingButton translate="no" onClick={() => setShowEvents(true)}>
+        <FloatingButton translate="no" onClick={() => setShowEvents(true)} aria-label="Calendrier académique">
           <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
         </FloatingButton>
       )}
+      <NavCalendarButton
+        type="button"
+        className="calendar-nav-btn"
+        aria-label="Calendrier académique"
+        title="Calendrier académique"
+        onClick={() => setShowEvents(true)}
+      >
+        <FontAwesomeIcon icon={faCalendarAlt} style={{ fontSize: 18 }} />
+      </NavCalendarButton>
 
-      <Overlay className="calendar-overlay" active={showEvents} onClick={() => setShowEvents(false)}>
-        <EventModal className="calendar-modal" active={showEvents} onClick={(e) => e.stopPropagation()}>
-          <ModalHeader>
-            <h2>CALENDRIER ACADEMIQUE 2025-2026</h2>
-            <CloseBtn
-              icon={faTimes}
-              className="close-btn"
-              onClick={() => setShowEvents(false)}
-            />
-          </ModalHeader>
-          <ModalContent>
-            <ContentSection>
-              <h3>PREMIER SEMESTRE : 25 septembre 2025 au 07 février 2026</h3>
-              <ul>
-                <li>
-                  <span className="date">Jeudi 26 septembre :</span> rentrée des internes
-                </li>
-                <li>
-                  <span className="date">Lundi 29 septembre :</span> réunion de tous les étudiants à 08h + Messe du Saint-Esprit à 10h
-                </li>
-                <li>
-                  <span className="date">Dimanche 26 octobre :</span> fête patronale et Ordre mineur
-                </li>
-                <li>
-                  <span className="date">Samedi 01 novembre :</span> la Toussaint (pas de cours)
-                </li>
-                <li>
-                  <span className="date">Mercredi 17 décembre :</span> vacances de Noël (après-midi)
-                </li>
-                <li>
-                  <span className="date">Samedi 03 janvier :</span> rentrée des internes
-                </li>
-                <li>
-                  <span className="date">Lundi 05 janvier :</span> reprise des cours
-                </li>
-                <li>
-                  <span className="date">Du 22 janvier au 04 février :</span> examens semestriels
-                </li>
-                <li>
-                  <span className="date">Vendredi 06 et samedi 07 février :</span> symposium
-                </li>
-              </ul>
-            </ContentSection>
-
-            <ContentSection>
-              <h3>DEUXIEME SEMESTRE : du 09 février au 19 juin 2026</h3>
-              <ul>
-                <li>
-                  <span className="date">Lundi 09 février :</span> début des cours
-                </li>
-                <li>
-                  <span className="date">Jeudi 26 mars :</span> vacances de Pâques
-                </li>
-                <li>
-                  <span className="date">Jeudi 09 avril :</span> rentrée des internes
-                </li>
-                <li>
-                  <span className="date">Vendredi 10 avril :</span> reprise des cours
-                </li>
-                <li>
-                  <span className="date">Jeudi 14 mai :</span> Ascension (excursion)
-                </li>
-                <li>
-                  <span className="date">Dimanche 17 mai :</span> sakafom-pitiavana
-                </li>
-                <li>
-                  <span className="date">Lundi 24 mai :</span> lundi de Pentecôte
-                </li>
-                <li>
-                  <span className="date">Du 05 juin au 17 juin :</span>examens semestriels
-                </li>
-                <li>
-                  <span className="date">Mercredi 17 juin :</span> grand oral
-                </li>
-                <li>
-                  <span className="date">Jeudi 11 juin :</span> réunion des Educateurs avec les Responsables des Foyers 
-                </li>
-                <li>
-                  <span className="date">Jeudi 18 juin :</span> réunion des Enseignants
-                </li>
-                <li>
-                  <span className="date">Vendredi 19 juin :</span> clôture de l’année académique par la Sainte Messe
-                </li>
-                <li>
-                  <span className="date">Jeudi 24 septembre :</span> rentrée 2026-2027
-                </li>
-              </ul>
-            </ContentSection>
-          </ModalContent>
-        </EventModal>
-      </Overlay>
+      <SidePanel
+        isOpen={showEvents}
+        onClose={() => setShowEvents(false)}
+        eyebrow={`Année ${ACADEMIC_YEAR}`}
+        title="Calendrier académique"
+      >
+        {yearIsOver && (
+          <p className="calendar-notice">
+            L’année académique {ACADEMIC_YEAR} est terminée. Le calendrier de la nouvelle année sera publié prochainement.
+          </p>
+        )}
+        {semesters.map((semester) => (
+          <section key={semester.title} className="calendar-semester">
+            <h3>{semester.title}</h3>
+            <p className="calendar-range">{formatRange(semester.start, semester.end)}</p>
+            <ul className="calendar-list">
+              {semester.events.map((event) => {
+                const isPast = (event.end || event.date) < today;
+                const isNext = event === nextEvent;
+                return (
+                  <li
+                    key={`${event.date}-${event.label}`}
+                    className={`calendar-item${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}`}
+                  >
+                    <span className="calendar-date">{formatEventDate(event)}</span>
+                    <span className="calendar-label">{event.label}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </SidePanel>
     </>
   );
 };
