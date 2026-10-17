@@ -42,6 +42,7 @@ html.dark-mode .gtco-nav:not(.scrolled) {
    même contre-filtre pour qu'il continue, lui, à suivre le thème normalement. */
 html.dark-mode .ReactModal__Overlay,
 html.dark-mode .modal-overlay,
+html.dark-mode .actu-overlay,
 html.dark-mode .side-panel-overlay,
 html.dark-mode body.offcanvas #page::after {
   filter: invert(1) hue-rotate(180deg);
@@ -49,6 +50,7 @@ html.dark-mode body.offcanvas #page::after {
 
 html.dark-mode .ReactModal__Content,
 html.dark-mode .modal-content,
+html.dark-mode .actu-lecture,
 html.dark-mode .side-panel {
   filter: invert(1) hue-rotate(180deg);
 }

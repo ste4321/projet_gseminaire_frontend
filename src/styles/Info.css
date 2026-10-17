@@ -1,148 +1,503 @@
-/* Liste principale */
-.folio-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .folio-list__item {
-    position: relative;
-    margin-bottom: 20px;
-    width: 100%;
-    margin-right: 20px;
-    cursor: pointer;
-  }
-  
-  @media screen and (max-width: 1000px) {
-    .folio-list__item {
-      width: 100%;
-      margin-right: 0;
-    }
-  }
-  
-  /* Lien de l'élément */
-  .folio-list__item-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    overflow: hidden;
-    transition: box-shadow 0.3s ease, color 0.3s ease;
-  }
-  
-  /* Effet hover pour l'ombre et changement de couleur du texte */
-  .folio-list__item-link:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  .folio-list__item-link:hover .folio-list__item-text .folio-list__item-cat,
-  .folio-list__item-link:hover .folio-list__item-text .folio-list__item-title,
-  .folio-list__item-link:hover .folio-list__item-text .folio-list__item-date {
-    color: #6b4600f1; /* Couleur de survol */
-  }
-  
-  /* Texte de l'élément */
-  .folio-list__item-text {
-    padding: 10px;
-  }
-  
-  .folio-list__item-cat {
-    font-size: 14px;
-    color: #999;
-    font-style: italic;
+/* =======================================================
+   Section Actualités (#gtco-info)
+   Couleurs du site (--brand) ; le mode sombre est géré par l'inversion globale (index.css).
+   ======================================================= */
 
-  }
-  
-  .folio-list__item-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin: 5px 0;
-    margin-left: 10px;
-    
-  }
-  
-  .folio-list__item-date {
-    font-size: 12px;
-    color: #666;
-    text-align: right;
+#gtco-info {
+  --actu-bg: #fff;
+  --actu-border: #ece6dc;
+  --actu-soft: #faf6ee;
+  --actu-gold: #b8860b;
+  --actu-new: #c0392b;
+  background: linear-gradient(180deg, #fff 0%, var(--actu-soft) 100%);
+}
 
-  }
-  
-  /* Lien de projet (flèche) */
-  .folio-list__proj-link {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: #333;
-  }
-  
-  /* Modal */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+.actu-surtitre {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: 6px;
+}
+
+/* Statut sous le titre : « En direct », non lues, tout marquer comme lu */
+.actu-statut {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: -12px;
+}
+
+.actu-direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.actu-direct__point {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2e7d32;
+  animation: actu-pulse 1.8s ease-out infinite;
+}
+
+.actu-lien {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.actu-lien:hover { color: var(--brand-dark); }
+
+/* ---------- Cartes ---------- */
+
+.actu-card {
+  position: relative;
+  background: var(--actu-bg);
+  border: 1px solid var(--actu-border);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(60, 40, 10, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.actu-card:hover,
+.actu-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(60, 40, 10, 0.1);
+  border-color: rgba(141, 94, 8, 0.35);
+}
+
+.actu-card__btn {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  padding: 22px;
+  border: none;
+  background: none;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: inherit;
+}
+
+.actu-card__btn:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+/* Bloc date façon calendrier liturgique */
+.actu-date {
+  flex-shrink: 0;
+  width: 64px;
+  height: 72px;
+  border-radius: 10px;
+  background: var(--actu-soft);
+  border: 1px solid var(--actu-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.actu-date__jour {
+  font-family: var(--font-title);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--brand-dark);
+}
+.actu-date__mois {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brand);
+}
+.actu-date__annee {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.actu-card__corps {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.actu-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.actu-pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.actu-pill--une { background: var(--brand); color: #fff; }
+.actu-pill--new { background: #fdecea; color: var(--actu-new); }
+
+.actu-card__titre {
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--title);
+  margin: 0 0 8px;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+.actu-card__extrait {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.actu-card__pied {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+.actu-card__auteur {
+  color: var(--text-muted);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.actu-card__lire {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: var(--brand);
+  font-weight: 600;
+}
+.actu-card__lire svg { transition: transform 0.2s ease; }
+.actu-card:hover .actu-card__lire svg { transform: translateX(3px); }
+
+/* À la une : plus grande, liseré doré */
+.actu-card--une {
+  margin-bottom: 28px;
+  border-left: 5px solid var(--brand);
+}
+.actu-card--une .actu-card__btn { padding: 30px; gap: 28px; }
+.actu-card--une .actu-date { width: 84px; height: 96px; }
+.actu-card--une .actu-date__jour { font-size: 40px; }
+.actu-card--une .actu-card__titre { font-size: 32px; }
+.actu-card--une .actu-card__extrait { -webkit-line-clamp: 4; font-size: 16px; }
+
+/* Grille des autres actualités */
+.actu-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+/* Arrivée en direct : halo doré */
+.actu-card.is-fresh {
+  animation: actu-arrivee 1.2s ease-out, actu-halo 2.4s ease-in-out 1.2s 3;
+}
+
+/* Chargement */
+.actu-card--squelette {
+  height: 180px;
+  background: linear-gradient(90deg, #f4efe6 25%, #faf7f1 50%, #f4efe6 75%);
+  background-size: 200% 100%;
+  animation: actu-squelette 1.4s linear infinite;
+  border: none;
+}
+.actu-card--squelette:hover { transform: none; box-shadow: none; }
+
+/* États vides / erreur */
+.actu-vide {
+  text-align: center;
+  padding: 40px 20px;
+  border: 1px dashed var(--actu-border);
+  border-radius: 14px;
+  background: var(--actu-bg);
+  color: var(--text-muted);
+}
+.actu-vide p { margin-bottom: 16px; }
+
+.actu-bouton {
+  display: inline-block;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 2px solid var(--brand);
+  background: transparent;
+  color: var(--brand);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.actu-bouton:hover,
+.actu-bouton:focus-visible {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* ---------- Annonce d'une nouvelle actualité (direct) ---------- */
+
+.actu-toast-zone {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1500;
+  max-width: calc(100vw - 40px);
+}
+
+.actu-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 380px;
+  max-width: 100%;
+  padding: 14px 14px 14px 16px;
+  background: #fff;
+  border-radius: 12px;
+  border-left: 5px solid var(--brand);
+  box-shadow: 0 16px 40px rgba(40, 25, 5, 0.22);
+  animation: actu-toast-in 0.35s ease-out;
+}
+.actu-toast__icone { color: var(--actu-gold); font-size: 20px; }
+.actu-toast__texte {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+.actu-toast__texte strong { color: var(--brand-dark); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.actu-toast__texte span { color: var(--title); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.actu-toast__lire {
+  border: none;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.actu-toast__lire:hover { background: var(--brand-dark); }
+.actu-toast__fermer {
+  border: none;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* ---------- Lecture d'une actualité ---------- */
+
+body.actu-lecture-ouverte {
+  overflow: hidden;
+}
+body.actu-lecture-ouverte .gototop,
+body.actu-lecture-ouverte .calendar-nav-btn,
+body.actu-lecture-ouverte .theme-toggle-mobile,
+body.actu-lecture-ouverte .js-gtco-nav-toggle {
+  visibility: hidden;
+}
+
+.actu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(20, 14, 5, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.actu-overlay.is-visible { opacity: 1; }
+
+.actu-lecture {
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.25s ease;
+}
+.actu-overlay.is-visible .actu-lecture { transform: none; }
+
+.actu-lecture__entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--actu-border);
+  background: var(--actu-soft);
+}
+.actu-lecture__entete .actu-surtitre { margin: 0; }
+
+.actu-lecture__fermer {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--title);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.actu-lecture__fermer:hover,
+.actu-lecture__fermer:focus-visible { background: rgba(141, 94, 8, 0.12); }
+
+.actu-lecture__contenu {
+  padding: 28px 32px 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.actu-lecture__contenu h2 {
+  font-size: 34px;
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.actu-lecture__auteur {
+  color: var(--brand);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+.actu-lecture__texte p {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+.actu-lecture__pied {
+  padding: 14px 24px;
+  border-top: 1px solid var(--actu-border);
+  text-align: right;
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 768px) {
+  .actu-grille { grid-template-columns: 1fr; gap: 16px; }
+
+  .actu-card__btn,
+  .actu-card--une .actu-card__btn { padding: 18px; gap: 14px; }
+
+  .actu-date,
+  .actu-card--une .actu-date { width: 54px; height: 62px; }
+  .actu-date__jour,
+  .actu-card--une .actu-date__jour { font-size: 26px; }
+  .actu-date__annee { display: none; }
+
+  .actu-card__titre { font-size: 21px; }
+  .actu-card--une .actu-card__titre { font-size: 25px; }
+  .actu-card__extrait,
+  .actu-card--une .actu-card__extrait { font-size: 15px; -webkit-line-clamp: 3; }
+  .actu-card--une { margin-bottom: 16px; border-left-width: 4px; }
+
+  /* La lecture occupe tout l'écran, comme une page */
+  .actu-overlay { padding: 0; align-items: flex-end; }
+  .actu-lecture {
+    max-width: none;
+    max-height: none;
     height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+    border-radius: 0;
+    transform: translateY(100%);
   }
-  
-  .modal-content {
-    top: 30px;
-    background: #fff;
-    padding: 20px;
-    width: 100%;
-    max-width: 500px;
-    max-height:70vh;  /* Limite la hauteur pour les écrans et contenu long */
-    overflow-y: auto;  /* Ajoute un scroll vertical si nécessaire */
-    border-radius: 4px;
-    position: relative;
-  }
-  
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .close-button {
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .modal-body {
-    margin-top: 10px;
-  }
-  
-  .modal-footer {
-    margin-top: 20px;
-    text-align: right;
-    font-style: italic;
-  }
-  
-  .no-info {
-    color: #888;
-    font-style: italic;
-    margin-bottom: 12px;
-  }
+  .actu-lecture__contenu { flex: 1; padding: 22px 20px 8px; }
+  .actu-lecture__contenu h2 { font-size: 28px; }
+  .actu-lecture__texte p { font-size: 16px; }
+  .actu-lecture__pied { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); }
+  .actu-lecture__pied .actu-bouton { width: 100%; }
 
-  .info-retry {
-    background: none;
-    border: none;
-    padding: 0;
-    color: #8d5e08;
-    font-size: 14px;
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  .actu-toast-zone { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+  .actu-toast { width: 100%; }
+}
 
-  .info-retry:hover {
-    color: #6b4600;
-  }
+/* ---------- Animations ---------- */
+
+@keyframes actu-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(46, 125, 50, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+}
+@keyframes actu-arrivee {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes actu-halo {
+  0%, 100% { box-shadow: 0 1px 2px rgba(60, 40, 10, 0.04); }
+  50% { box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.35); }
+}
+@keyframes actu-squelette {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@keyframes actu-toast-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actu-card,
+  .actu-card.is-fresh,
+  .actu-direct__point,
+  .actu-card--squelette,
+  .actu-toast,
+  .actu-overlay,
+  .actu-lecture { animation: none; transition: none; }
+}
