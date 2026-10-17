@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { FaMoon, FaSun } from 'react-icons/fa';
-import { API_URL } from '../config';
+import { useActualites } from '../contexts/ActualitesContext';
 
 const THEME_STORAGE_KEY = 'theme';
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [unviewedCount, setUnviewedCount] = useState(0);
+  const { nonLues: unviewedCount, loading } = useActualites();
   const [heroReady, setHeroReady] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
@@ -21,39 +19,37 @@ const Nav = () => {
     localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
   }, [isDark]);
 
+  // Le menu mobile est un clone jQuery (sans React) : on y reporte le badge à chaque changement,
+  // et un point sur le bouton « menu » signale les nouveautés quand le menu est fermé.
   useEffect(() => {
-    const fetchInfos = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${API_URL}/infos`);
-
-        // Calculer le nombre d'infos non vues
-        const savedViewedInfos = localStorage.getItem('viewedInfos');
-        const viewedInfos = savedViewedInfos ? JSON.parse(savedViewedInfos) : [];
-        const unviewed = response.data.filter(info => !viewedInfos.includes(info.id)).length;
-        setUnviewedCount(unviewed);
-        
-      } catch (error) {
-        console.error("Erreur lors du chargement des infos :", error);
-      } finally {
-        setLoading(false);
-      }
+    const libelle = unviewedCount > 1 ? `${unviewedCount} nouvelles actualités` : 'Nouvelle actualité';
+    const synchroniser = () => {
+      document.querySelectorAll('#gtco-offcanvas a[data-nav-section="info"]').forEach((lien) => {
+        let badge = lien.querySelector('.nav-badge');
+        if (unviewedCount > 0) {
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'nav-badge';
+            lien.appendChild(badge);
+          }
+          badge.textContent = unviewedCount > 9 ? '9+' : String(unviewedCount);
+          badge.title = libelle;
+        } else if (badge) {
+          badge.remove();
+        }
+      });
+      document.querySelectorAll('.js-gtco-nav-toggle').forEach((bouton) => {
+        bouton.classList.toggle('has-unread', unviewedCount > 0);
+        bouton.dataset.unread = unviewedCount > 9 ? '9+' : String(unviewedCount);
+        bouton.setAttribute('aria-label', unviewedCount > 0 ? `Menu (${libelle.toLowerCase()})` : 'Menu');
+      });
     };
-
-    fetchInfos();
-
-    // Écouter les mises à jour du badge
-    const handleUpdateBadge = (event) => {
-      const { totalInfos, viewedInfos } = event.detail;
-      setUnviewedCount(totalInfos - viewedInfos);
-    };
-
-    window.addEventListener('updateInfoBadge', handleUpdateBadge);
-
-    return () => {
-      window.removeEventListener('updateInfoBadge', handleUpdateBadge);
-    };
-  }, []);
+    synchroniser();
+    // Le clone est créé par main.js après le premier rendu : on resynchronise quand il apparaît
+    const observateur = new MutationObserver(synchroniser);
+    observateur.observe(document.body, { childList: true });
+    return () => observateur.disconnect();
+  }, [unviewedCount]);
 
   // Tant que la nav survole la bannière, les boutons mobiles (menu, thème)
   // doivent être clairs pour rester visibles sur la photo.
@@ -177,10 +173,10 @@ const Nav = () => {
                     Info
                     {!loading && unviewedCount > 0 && (
                       <span
-                        className="badge bg-danger ms-1"
-                        title={`${unviewedCount} nouvelle${unviewedCount > 1 ? 's' : ''} information${unviewedCount > 1 ? 's' : ''}`}
+                        className="nav-badge"
+                        title={`${unviewedCount} nouvelle${unviewedCount > 1 ? 's' : ''} actualité${unviewedCount > 1 ? 's' : ''}`}
                       >
-                        {unviewedCount}
+                        {unviewedCount > 9 ? '9+' : unviewedCount}
                       </span>
                     )}
                   </a>
@@ -221,7 +217,7 @@ const Nav = () => {
           </div>
         </div>
       </nav>
-      
+
       <section
         id="gtco-hero"
         className={`gtco-cover ${heroReady ? 'is-ready' : ''}`}

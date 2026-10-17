@@ -8,6 +8,7 @@ import FloatingCalendar from "../components/FloatingCalendar";
 import EquipeFormatrice from "../components/EquipeFormatrice";
 import React, { useEffect } from "react";
 import Info from "../components/Info";
+import { ActualitesProvider } from "../contexts/ActualitesContext";
 
 
 const Home = () => {
@@ -22,7 +23,7 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, []);
     return (
-      <>
+      <ActualitesProvider>
         <div id="page">
             <Nav />
             <About />
@@ -34,8 +35,7 @@ const Home = () => {
             <Footer />
             <FloatingCalendar />
         </div>
-
-      </>
+      </ActualitesProvider>
     );
   };
   

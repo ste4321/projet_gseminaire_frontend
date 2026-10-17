@@ -501,9 +501,55 @@ html.dark-mode body.at-top:not(.offcanvas) .calendar-nav-btn {
   text-align: center;
 }
 
-/* Le badge « nouvelles infos » cloné garde sa taille */
-#gtco-offcanvas .badge {
+/* Badge « nouvelles actualités » du menu Info (menu principal et menu mobile cloné) */
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
   margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #c0392b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  vertical-align: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+  animation: nav-badge-in 0.3s ease-out;
+}
+
+@keyframes nav-badge-in {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Mobile, menu fermé : nombre d'actualités non lues sur le bouton « menu » (comme le badge INFO) */
+.js-gtco-nav-toggle.has-unread::after {
+  content: attr(data-unread);
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #c0392b;
+  color: #fff;
+  font: 700 11px/18px "Open Sans", Arial, sans-serif;
+  text-align: center;
+  box-shadow: 0 0 0 2px #fff;
+  animation: nav-badge-in 0.3s ease-out;
+}
+body.offcanvas .js-gtco-nav-toggle.has-unread::after {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-badge { animation: none; }
 }
 
 /* Menu ouvert : on masque l'icône calendrier qui se superposerait au menu */
