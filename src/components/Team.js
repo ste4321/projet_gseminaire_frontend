@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 
-// Affiche le premier paragraphe, puis le reste à la demande
+// Affiche le premier paragraphe, puis déplie le reste en douceur
+// (le contenu reste dans la page pour pouvoir animer sa hauteur)
 const Expandable = ({ intro, children }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
         <>
             <p>{intro}</p>
-            {isOpen && children}
+            <div className={`expandable ${isOpen ? "is-open" : ""}`} inert={!isOpen}>
+                <div className="expandable__inner">{children}</div>
+            </div>
             <button
                 type="button"
-                className="read-toggle"
+                className={`read-toggle ${isOpen ? "is-open" : ""}`}
                 aria-expanded={isOpen}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
-                {isOpen ? "Réduire ↑" : "Lire la suite →"}
+                {isOpen ? "Réduire" : "Lire la suite"}
+                <span className="read-toggle__icon" aria-hidden="true">↓</span>
             </button>
         </>
     );
