@@ -16,7 +16,7 @@ const dateRelative = (iso) => {
   if (ecart <= 0) return "Aujourd'hui";
   if (ecart === 1) return 'Hier';
   if (ecart < 7) return `Il y a ${ecart} jours`;
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  return null; // au-delà, le bloc date suffit
 };
 
 // Lien partageable : https://…/#actualite-12 ouvre directement l'actualité
@@ -34,14 +34,16 @@ const Carte = ({ info, uneDuMoment, nouvelle, fraiche, onOuvrir }) => (
       <div className="actu-date" aria-hidden="true">
         <span className="actu-date__jour">{jour(info.created_at)}</span>
         <span className="actu-date__mois">{mois(info.created_at)}</span>
-        {uneDuMoment && <span className="actu-date__annee">{annee(info.created_at)}</span>}
+        {(uneDuMoment || annee(info.created_at) !== new Date().getFullYear()) && (
+          <span className="actu-date__annee">{annee(info.created_at)}</span>
+        )}
       </div>
 
       <div className="actu-card__corps">
         <div className="actu-card__meta">
           {uneDuMoment && <span className="actu-pill actu-pill--une">À la une</span>}
           {nouvelle && <span className="actu-pill actu-pill--new">Nouveau</span>}
-          <time dateTime={info.created_at}>{dateRelative(info.created_at)}</time>
+          {dateRelative(info.created_at) && <time dateTime={info.created_at}>{dateRelative(info.created_at)}</time>}
         </div>
         <h3 className="actu-card__titre">{info.titre}</h3>
         {info.description && <p className="actu-card__extrait">{info.description}</p>}

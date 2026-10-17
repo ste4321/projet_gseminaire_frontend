@@ -109,8 +109,10 @@
 /* Bloc date façon calendrier liturgique */
 .actu-date {
   flex-shrink: 0;
+  align-self: flex-start; /* ne s'étire pas sur la hauteur de la carte */
   width: 64px;
-  height: 72px;
+  min-height: 72px;
+  padding: 8px 0;
   border-radius: 10px;
   background: var(--actu-soft);
   border: 1px solid var(--actu-border);
@@ -146,6 +148,8 @@
   display: flex;
   flex-direction: column;
 }
+
+.actu-card__meta:empty { display: none; }
 
 .actu-card__meta {
   display: flex;
@@ -185,8 +189,9 @@
   font-size: 15px;
   line-height: 1.6;
   margin: 0 0 16px;
+  max-width: 70ch; /* largeur de lecture confortable */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -223,10 +228,10 @@
   border-left: 5px solid var(--brand);
 }
 .actu-card--une .actu-card__btn { padding: 30px; gap: 28px; }
-.actu-card--une .actu-date { width: 84px; height: 96px; }
+.actu-card--une .actu-date { width: 84px; min-height: 96px; }
 .actu-card--une .actu-date__jour { font-size: 40px; }
 .actu-card--une .actu-card__titre { font-size: 32px; }
-.actu-card--une .actu-card__extrait { -webkit-line-clamp: 4; font-size: 16px; }
+.actu-card--une .actu-card__extrait { -webkit-line-clamp: 3; font-size: 16px; }
 
 /* Grille des autres actualités */
 .actu-grille {
@@ -439,14 +444,13 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
   .actu-card--une .actu-card__btn { padding: 18px; gap: 14px; }
 
   .actu-date,
-  .actu-card--une .actu-date { width: 54px; height: 62px; }
+  .actu-card--une .actu-date { width: 54px; min-height: 62px; }
   .actu-date__jour,
   .actu-card--une .actu-date__jour { font-size: 26px; }
-  .actu-date__annee { display: none; }
 
   .actu-card__titre { font-size: 21px; }
   .actu-card--une .actu-card__titre { font-size: 25px; }
-  .actu-card__extrait,
+  .actu-card__extrait { font-size: 15px; -webkit-line-clamp: 2; }
   .actu-card--une .actu-card__extrait { font-size: 15px; -webkit-line-clamp: 3; }
   .actu-card--une { margin-bottom: 16px; border-left-width: 4px; }
 
