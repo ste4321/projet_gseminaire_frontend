@@ -231,7 +231,8 @@
 /* Grille des autres actualités */
 .actu-grille {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  /* auto-fit : une carte seule prend toute la largeur, deux cartes se partagent la ligne */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
   margin-bottom: 28px;
 }

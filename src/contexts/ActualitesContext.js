@@ -1,7 +1,7 @@
 // Actualités du site vitrine, partagées entre le menu (badge « Info ») et la section Actualités.
 // - un seul chargement pour toute la page
 // - mises à jour en direct par WebSocket (publication, modification, suppression)
-// - repli sans WebSocket : rafraîchissement toutes les 2 minutes et au retour sur l'onglet
+// - repli sans WebSocket : rafraîchissement toutes les 30 secondes et au retour sur l'onglet
 // - « lu / non lu » mémorisé dans le navigateur du visiteur
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
@@ -12,7 +12,7 @@ import { getCookie, setCookie } from '../utils/cookie';
 const ActualitesContext = createContext(null);
 
 const STORAGE_KEY = 'viewedInfos';
-const POLL_MS = 2 * 60 * 1000;
+const POLL_MS = 30 * 1000;
 
 const lireVues = () => {
   try {
@@ -34,12 +34,31 @@ export const ActualitesProvider = ({ children }) => {
   const [arrivee, setArrivee] = useState(null); // dernière actualité reçue en direct (pour l'annonce)
   const [fraiches, setFraiches] = useState(() => new Set()); // ids à mettre en évidence
   const premierChargement = useRef(true);
+  const connues = useRef(new Set()); // ids déjà affichés, pour repérer les nouvelles actualités
+
+  // Nouvelle actualité (reçue en direct ou découverte à la mise à jour) : annonce + mise en évidence
+  const signalerArrivee = useCallback((info) => {
+    setArrivee(info);
+    setFraiches((s) => new Set(s).add(info.id));
+    setTimeout(() => setFraiches((s) => {
+      const copie = new Set(s);
+      copie.delete(info.id);
+      return copie;
+    }), 8000);
+  }, []);
 
   const charger = useCallback(async () => {
     if (premierChargement.current) setLoading(true);
     try {
       const res = await axios.get(`${API_URL}/infos`);
-      setInfos(trier(res.data));
+      const liste = trier(res.data);
+      // Mode sans direct : une actualité apparue depuis le dernier chargement est annoncée comme en direct
+      if (!premierChargement.current) {
+        const nouvelles = liste.filter((i) => !connues.current.has(i.id));
+        if (nouvelles.length > 0) signalerArrivee(nouvelles[0]);
+      }
+      connues.current = new Set(liste.map((i) => i.id));
+      setInfos(liste);
       setError(null);
     } catch (e) {
       // Erreur affichée seulement si rien n'a encore pu être chargé
@@ -48,7 +67,7 @@ export const ActualitesProvider = ({ children }) => {
       premierChargement.current = false;
       setLoading(false);
     }
-  }, []);
+  }, [signalerArrivee]);
 
   useEffect(() => {
     charger();
@@ -82,14 +101,9 @@ export const ActualitesProvider = ({ children }) => {
         return;
       }
       setInfos((liste) => trier([info, ...liste.filter((i) => i.id !== info.id)]));
-      if (action === 'creee') {
-        setArrivee(info);
-        setFraiches((s) => new Set(s).add(info.id));
-        setTimeout(() => setFraiches((s) => {
-          const copie = new Set(s);
-          copie.delete(info.id);
-          return copie;
-        }), 8000);
+      if (action === 'creee' && !connues.current.has(info.id)) {
+        connues.current.add(info.id);
+        signalerArrivee(info);
       }
     });
 
@@ -97,7 +111,7 @@ export const ActualitesProvider = ({ children }) => {
       stopEtat();
       echo.leaveChannel('actualites');
     };
-  }, [charger]);
+  }, [charger, signalerArrivee]);
 
   // Repli : sans WebSocket connecté, rafraîchissement périodique et au retour sur l'onglet
   useEffect(() => {

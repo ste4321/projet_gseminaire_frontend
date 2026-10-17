@@ -40,6 +40,7 @@ const Nav = () => {
       });
       document.querySelectorAll('.js-gtco-nav-toggle').forEach((bouton) => {
         bouton.classList.toggle('has-unread', unviewedCount > 0);
+        bouton.dataset.unread = unviewedCount > 9 ? '9+' : String(unviewedCount);
         bouton.setAttribute('aria-label', unviewedCount > 0 ? `Menu (${libelle.toLowerCase()})` : 'Menu');
       });
     };

@@ -527,17 +527,22 @@ html.dark-mode body.at-top:not(.offcanvas) .calendar-nav-btn {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* Mobile, menu fermé : point sur le bouton « menu » quand des actualités sont non lues */
+/* Mobile, menu fermé : nombre d'actualités non lues sur le bouton « menu » (comme le badge INFO) */
 .js-gtco-nav-toggle.has-unread::after {
-  content: "";
+  content: attr(data-unread);
   position: absolute;
-  top: 8px;
-  right: 6px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
   background: #c0392b;
+  color: #fff;
+  font: 700 11px/18px "Open Sans", Arial, sans-serif;
+  text-align: center;
   box-shadow: 0 0 0 2px #fff;
+  animation: nav-badge-in 0.3s ease-out;
 }
 body.offcanvas .js-gtco-nav-toggle.has-unread::after {
   display: none;
