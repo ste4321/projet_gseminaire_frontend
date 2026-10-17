@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 
 const equipe = [
@@ -10,15 +10,42 @@ const equipe = [
   { role: "Sœur intendante", nom: "Sr. RAZANAPARANY Angeline", tel: "+261 34 36 058 54" },
 ];
 
-// Toute l'équipe visible d'un coup ; numéros cliquables sur téléphone
+// Toute l'équipe visible d'un coup ; numéros cliquables sur téléphone.
+// Les cartes apparaissent en cascade quand la section arrive à l'écran.
 const EquipeFormatrice = () => {
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || !("IntersectionObserver" in window)) {
+      setIsVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // une seule fois
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="team-list" aria-labelledby="team-list-title">
+    <section
+      ref={sectionRef}
+      className={`team-list ${isVisible ? "is-visible" : ""}`}
+      aria-labelledby="team-list-title"
+    >
       <div className="container">
         <h2 id="team-list-title" className="team-list__title">L’équipe formatrice</h2>
         <ul className="team-list__grid">
-          {equipe.map((personne) => (
-            <li key={personne.nom} className="team-list__card">
+          {equipe.map((personne, index) => (
+            <li key={personne.nom} className="team-list__card" style={{ "--i": index }}>
               <p className="team-list__role">{personne.role}</p>
               <p className="team-list__name">{personne.nom}</p>
               <a className="team-list__tel" href={`tel:${personne.tel.replace(/\s/g, "")}`}>

@@ -9,6 +9,7 @@ const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [unviewedCount, setUnviewedCount] = useState(0);
+  const [heroReady, setHeroReady] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
     if (saved) return saved === 'dark';
@@ -65,6 +66,23 @@ const Nav = () => {
     return () => window.removeEventListener('scroll', updateAtTop);
   }, []);
 
+  // Animation d'entrée de la bannière : on attend que l'écran de chargement
+  // du template ait disparu (3,5 s au plus, au cas où il resterait bloqué)
+  useEffect(() => {
+    const startedAt = Date.now();
+    const timer = setInterval(() => {
+      const loader = document.querySelector('.gtco-loader');
+      const style = loader && getComputedStyle(loader);
+      const loaderGone =
+        !loader || style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
+      if (loaderGone || Date.now() - startedAt > 3500) {
+        setHeroReady(true);
+        clearInterval(timer);
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, []);
+
   // Fermer le menu en cliquant sur un lien
   const handleMenuClick = () => {
     setIsMenuOpen(false);
@@ -93,14 +111,26 @@ const Nav = () => {
         </button>
         <div className="container">
           <div className="row">
-            <div className="col-sm-2 col-xs-12">
+            <div className="col-sm-3 col-xs-12">
               <div id="gtco-logo">
-                <a href="/" aria-label="Retour à l'accueil">
-                  G.S.T.F
+                <a href="/" className="brand" aria-label="Grand Séminaire de Théologie Faliarivo — accueil">
+                  <span className="brand__emblem">
+                    <img
+                      src="/images/logo-gstf-48.png"
+                      srcSet="/images/logo-gstf-48.png 1x, /images/logo-gstf-96.png 2x, /images/logo-gstf.png 3x"
+                      alt=""
+                      width="36"
+                      height="36"
+                    />
+                  </span>
+                  <span className="brand__text">
+                    <span className="brand__name">G.S.T.F</span>
+                    <span className="brand__sub">Grand Séminaire · Faliarivo</span>
+                  </span>
                 </a>
               </div>
             </div>
-            <div className="col-sm-10 col-xs-12 text-right menu-1 main-nav">
+            <div className="col-sm-9 col-xs-12 text-right menu-1 main-nav">
               <ul className={`menu-list ${isMenuOpen ? 'menu-open' : ''}`}>
                 <li>
                   <a
@@ -194,7 +224,7 @@ const Nav = () => {
       
       <section
         id="gtco-hero"
-        className="gtco-cover"
+        className={`gtco-cover ${heroReady ? 'is-ready' : ''}`}
         data-section="home"
         data-stellar-background-ratio="0.5"
       >
@@ -205,7 +235,7 @@ const Nav = () => {
             <div className="col-md-12 col-md-offset-0 text-center">
               <div className="display-t">
                 <div className="display-tc">
-                  <div className="hero-content animate-box" data-animate-effect="fadeIn">
+                  <div className={`hero-content ${heroReady ? 'is-ready' : ''}`}>
                     <p className="hero-kicker">Antananarivo · Madagascar</p>
                     <h1>
                       Grand Séminaire de Théologie <span>Faliarivo</span>

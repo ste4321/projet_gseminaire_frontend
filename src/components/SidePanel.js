@@ -57,7 +57,8 @@ const SidePanel = ({ isOpen, onClose, eyebrow, title, children, footer }) => {
           </button>
         </header>
 
-        <div className="side-panel__body" ref={bodyRef}>
+        {/* key : le contenu est recréé (et son animation rejouée) quand le titre change */}
+        <div className="side-panel__body" ref={bodyRef} key={title}>
           {children}
         </div>
 

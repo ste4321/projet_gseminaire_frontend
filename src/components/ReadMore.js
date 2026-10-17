@@ -39,8 +39,8 @@ const ReadMore = ({ isOpen, onRequestClose }) => {
       </figure>
       <h3 className="panel-heading">Repères</h3>
       <ol className="milestones">
-        {milestones.map((item) => (
-          <li key={item.date}>
+        {milestones.map((item, index) => (
+          <li key={item.date} style={{ '--i': index }}>
             <span className="milestones__date">{item.date}</span>
             <span className="milestones__text">{item.text}</span>
           </li>
@@ -48,16 +48,23 @@ const ReadMore = ({ isOpen, onRequestClose }) => {
       </ol>
 
       <h3 className="panel-heading">L’histoire complète</h3>
-      {(showFullStory ? paragraphs : paragraphs.slice(0, 1)).map((text, i) => (
-        <p key={i}>{text}</p>
-      ))}
+      <p>{paragraphs[0]}</p>
+      {/* La suite se déplie en douceur (même animation que « Notre équipe ») */}
+      <div className={`expandable ${showFullStory ? 'is-open' : ''}`} inert={!showFullStory}>
+        <div className="expandable__inner">
+          {paragraphs.slice(1).map((text, i) => (
+            <p key={i}>{text}</p>
+          ))}
+        </div>
+      </div>
       <button
         type="button"
-        className="read-toggle"
+        className={`read-toggle ${showFullStory ? 'is-open' : ''}`}
         aria-expanded={showFullStory}
         onClick={() => setShowFullStory((prev) => !prev)}
       >
-        {showFullStory ? 'Réduire ↑' : 'Lire toute l’histoire →'}
+        {showFullStory ? 'Réduire' : 'Lire toute l’histoire'}
+        <span className="read-toggle__icon" aria-hidden="true">↓</span>
       </button>
     </SidePanel>
   );

@@ -511,3 +511,450 @@ body.offcanvas .calendar-nav-btn,
 body.offcanvas .theme-toggle-mobile {
   display: none;
 }
+
+/* ---------- Équipe : dépliage animé de « Lire la suite » ---------- */
+
+/* La hauteur passe de 0 à « auto » via grid-template-rows (0fr -> 1fr) */
+.expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    grid-template-rows 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.3s ease,
+    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.expandable.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    grid-template-rows 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.4s ease 0.1s,
+    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.expandable__inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.read-toggle__icon {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 0.35s ease;
+}
+
+.read-toggle.is-open .read-toggle__icon {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expandable,
+  .expandable.is-open,
+  .read-toggle__icon {
+    transition: none;
+  }
+}
+
+/* ---------- Ouverture du site : entrée de la bannière ---------- */
+
+/* La photo se dézoome lentement */
+.gtco-cover-bg {
+  transform: scale(1.08);
+  transition: transform 2.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.gtco-cover.is-ready .gtco-cover-bg {
+  transform: scale(1);
+}
+
+/* Lieu, titre, citation puis boutons apparaissent l'un après l'autre */
+.hero-content > * {
+  opacity: 0;
+  translate: 0 18px;
+}
+
+.hero-content.is-ready > * {
+  animation: rise-in 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.hero-content.is-ready > :nth-child(1) { animation-delay: 0.1s; }
+.hero-content.is-ready > :nth-child(2) { animation-delay: 0.25s; }
+.hero-content.is-ready > :nth-child(3) { animation-delay: 0.5s; }
+.hero-content.is-ready > :nth-child(4) { animation-delay: 0.7s; }
+
+@keyframes rise-in {
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ---------- Équipe formatrice : cartes en cascade ---------- */
+
+.team-list__title,
+.team-list__card {
+  opacity: 0;
+  translate: 0 24px;
+}
+
+.team-list.is-visible .team-list__title {
+  animation: rise-in 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.team-list.is-visible .team-list__card {
+  animation: rise-in 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation-delay: calc(0.15s + var(--i) * 0.09s);
+}
+
+/* Survol : la carte se soulève légèrement */
+.team-list__card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.team-list__card:hover {
+  transform: translateY(-3px);
+  border-color: #e2d3b5;
+  box-shadow: 0 8px 20px rgba(107, 70, 0, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gtco-cover-bg,
+  .gtco-cover.is-ready .gtco-cover-bg {
+    transform: none;
+    transition: none;
+  }
+  .hero-content > *,
+  .team-list__title,
+  .team-list__card {
+    opacity: 1;
+    translate: none;
+    animation: none !important;
+  }
+}
+
+/* =======================================================
+   Barre de navigation
+   ======================================================= */
+
+.gtco-nav {
+  padding: 16px 0;
+  transition: padding 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Au défilement : barre plus fine */
+.gtco-nav.scrolled {
+  padding: 8px 0;
+  box-shadow: 0 2px 14px rgba(31, 26, 20, 0.08);
+}
+
+.gtco-nav .container > .row {
+  display: flex;
+  align-items: center;
+}
+
+/* ---------- Logo : emblème + nom ---------- */
+
+.gtco-nav #gtco-logo .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  color: #fff;
+}
+
+.brand__emblem {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* L'emblème recadré occupe 76 % du cercle : assez grand pour être lisible,
+   sans que le cercle ne coupe le « G » et le « F » du bas */
+.brand__emblem img {
+  width: 76%;
+  height: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand__name {
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.brand__sub {
+  margin-top: 3px;
+  font-family: var(--font-text);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.gtco-nav.scrolled #gtco-logo .brand {
+  color: var(--brand-dark);
+}
+
+.gtco-nav.scrolled .brand__emblem {
+  width: 42px;
+  height: 42px;
+  box-shadow: 0 0 0 1px #eee4d3;
+}
+
+/* ---------- Liens ---------- */
+
+.gtco-nav .menu-1 ul li {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.gtco-nav .menu-1 ul li a {
+  position: relative;
+  display: inline-block;
+  padding: 8px 11px;
+  font-size: 13px;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.gtco-nav.scrolled .menu-1 ul li a {
+  color: #5c5348;
+}
+
+/* Soulignement animé : survol et rubrique active */
+.gtco-nav .menu-1 ul li:not(.btn-cta):not(.theme-toggle-item) > a::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.gtco-nav .menu-1 ul li:not(.btn-cta) > a:hover::after,
+.gtco-nav .menu-1 ul li.active > a::after {
+  transform: scaleX(1);
+}
+
+.gtco-nav .menu-1 ul li a:hover {
+  color: #fff;
+}
+
+.gtco-nav.scrolled .menu-1 ul li a:hover,
+.gtco-nav.scrolled .menu-1 ul li.active > a {
+  color: var(--brand-dark) !important;
+}
+
+/* ---------- Bouton de thème ---------- */
+
+.gtco-nav .theme-toggle-item .theme-toggle-btn {
+  width: 38px;
+  height: 38px;
+  margin: 0 6px;
+  padding: 0;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.9);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gtco-nav .theme-toggle-item .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.gtco-nav.scrolled .theme-toggle-item .theme-toggle-btn {
+  color: #5c5348;
+}
+
+.gtco-nav.scrolled .theme-toggle-item .theme-toggle-btn:hover {
+  background: #f3ece0;
+  color: var(--brand-dark);
+}
+
+/* ---------- Bouton « Se connecter » ---------- */
+
+.gtco-nav .menu-1 ul li.btn-cta a {
+  padding: 0;
+}
+
+.gtco-nav ul li.btn-cta a span,
+.gtco-nav.scrolled ul li.btn-cta a span {
+  padding: 9px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.gtco-nav.scrolled ul li.btn-cta a span {
+  border-color: var(--brand) !important;
+  background: var(--brand);
+}
+
+.gtco-nav ul li.btn-cta a:hover span,
+.gtco-nav.scrolled ul li.btn-cta a:hover span {
+  border-color: var(--brand-dark) !important;
+  background: var(--brand-dark);
+}
+
+/* Le logo garde sa largeur naturelle, le menu prend le reste */
+@media screen and (min-width: 769px) {
+  .gtco-nav .container > .row > .col-sm-3 {
+    flex: 0 0 auto;
+    width: auto;
+  }
+  .gtco-nav .container > .row > .col-sm-9 {
+    flex: 1 1 auto;
+    width: auto;
+  }
+  /* Menu en flexbox : alignement vertical net, pas d'espaces parasites */
+  .gtco-nav .menu-1 > ul {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 0;
+  }
+}
+
+/* Écrans moyens : on retire la ligne sous le nom et on resserre le menu */
+@media screen and (max-width: 1199px) {
+  .brand__sub {
+    display: none;
+  }
+  .gtco-nav .menu-1 ul li a {
+    padding: 8px 7px;
+    letter-spacing: 0.02em;
+  }
+  .gtco-nav .menu-1 ul li:not(.btn-cta):not(.theme-toggle-item) > a::after {
+    left: 7px;
+    right: 7px;
+  }
+}
+
+/* Les libellés ne se coupent jamais sur deux lignes */
+.gtco-nav .menu-1 ul li {
+  flex-shrink: 0;
+}
+
+.gtco-nav .menu-1 ul li a,
+.gtco-nav ul li.btn-cta a span {
+  white-space: nowrap;
+}
+
+/* Tablettes : textes du menu un peu plus petits */
+@media screen and (min-width: 769px) and (max-width: 991px) {
+  .gtco-nav .menu-1 ul li a {
+    font-size: 12px;
+    padding: 8px 4px;
+  }
+  .gtco-nav .menu-1 ul li:not(.btn-cta):not(.theme-toggle-item) > a::after {
+    left: 4px;
+    right: 4px;
+  }
+  .gtco-nav #gtco-logo .brand {
+    gap: 8px;
+  }
+  .gtco-nav .theme-toggle-item .theme-toggle-btn {
+    margin: 0 2px;
+  }
+  .gtco-nav ul li.btn-cta a span,
+  .gtco-nav.scrolled ul li.btn-cta a span {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 768px) {
+  .gtco-nav,
+  .gtco-nav.scrolled {
+    padding: 10px 0;
+  }
+
+  .brand__sub {
+    display: block;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+  }
+
+  .brand__name {
+    font-size: 22px;
+  }
+
+  .brand__emblem,
+  .gtco-nav.scrolled .brand__emblem {
+    width: 42px;
+    height: 42px;
+  }
+
+  /* Calendrier, thème et menu : trois boutons de 44px alignés au centre de la barre */
+  .calendar-nav-btn,
+  .theme-toggle-mobile,
+  .gtco-nav-toggle {
+    top: 12px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .gtco-nav-toggle {
+    right: 6px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+  }
+
+  .theme-toggle-mobile {
+    right: 50px !important;
+  }
+
+  .calendar-nav-btn {
+    right: 94px !important;
+  }
+}
+
+/* Très petits écrans : on garde seulement le sigle */
+@media screen and (max-width: 360px) {
+  .brand__sub {
+    display: none;
+  }
+}
+
+/* Mode sombre : l'emblème garde ses vraies couleurs sur fond blanc */
+html.dark-mode .brand__emblem img {
+  filter: none;
+}
+
+html.dark-mode .gtco-nav.scrolled .brand__emblem {
+  filter: invert(1) hue-rotate(180deg);
+}
