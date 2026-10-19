@@ -351,19 +351,29 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
   visibility: hidden;
 }
 
+/* Les transitions déclarées sur l'état d'arrivée s'appliquent dans ce sens :
+   sortie (état de base) plus rapide et accélérée, entrée (.is-visible) plus douce et décélérée.
+   Durée de sortie alignée sur DUREE_FERMETURE (Info.js). */
 .actu-overlay {
   position: fixed;
   inset: 0;
   z-index: 2000;
   background: rgba(20, 14, 5, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  pointer-events: none; /* pendant la fermeture, les clics atteignent déjà la page */
+  transition: opacity 0.3s ease-in;
 }
-.actu-overlay.is-visible { opacity: 1; }
+.actu-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.35s ease-out;
+}
 
 .actu-lecture {
   width: 100%;
@@ -375,21 +385,45 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-  transform: translateY(16px) scale(0.98);
-  transition: transform 0.25s ease;
+  /* Part de la carte cliquée (--actu-dx/--actu-dy posés par Info.js), sinon monte légèrement */
+  opacity: 0;
+  transform: translate(var(--actu-dx, 0px), var(--actu-dy, 24px)) scale(0.85);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 1, 1), opacity 0.25s ease-in;
 }
-.actu-overlay.is-visible .actu-lecture { transform: none; }
+.actu-overlay.is-visible .actu-lecture {
+  opacity: 1;
+  transform: none;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out;
+}
 
 .actu-lecture__entete {
+  position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 12px;
   padding: 16px 24px;
   border-bottom: 1px solid var(--actu-border);
   background: var(--actu-soft);
 }
-.actu-lecture__entete .actu-surtitre { margin: 0; }
+.actu-lecture__entete .actu-surtitre { margin: 0; flex: 1; min-width: 0; }
+
+.actu-lecture__position {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progression de lecture, sur la bordure basse de l'en-tête */
+.actu-lecture__progression {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--brand);
+  transform-origin: left;
+  transition: transform 0.1s linear;
+}
 
 .actu-lecture__fermer {
   width: 40px;
@@ -410,6 +444,8 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
   padding: 28px 32px 8px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  animation: actu-contenu 0.35s ease-out; /* rejoué à chaque changement d'actualité */
 }
 .actu-lecture__contenu h2 {
   font-size: 34px;
@@ -430,10 +466,33 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
 }
 
 .actu-lecture__pied {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
   padding: 14px 24px;
   border-top: 1px solid var(--actu-border);
-  text-align: right;
 }
+.actu-lecture__fermer-bas:only-child { margin-left: auto; }
+
+.actu-lecture__nav {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 8px 4px;
+  color: var(--brand);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.actu-lecture__nav:last-child { text-align: right; }
+.actu-lecture__nav span { font-size: 18px; line-height: 1; }
+.actu-lecture__nav:hover:not(:disabled),
+.actu-lecture__nav:focus-visible { background: rgba(141, 94, 8, 0.08); }
+.actu-lecture__nav:disabled { opacity: 0.35; cursor: default; }
 
 /* ---------- Mobile ---------- */
 
@@ -461,19 +520,44 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
     max-height: none;
     height: 100%;
     border-radius: 0;
-    transform: translateY(100%);
+    opacity: 1;
+    transform: translateY(100%); /* glisse depuis le bas, et y redescend à la fermeture */
   }
+  .actu-overlay.is-visible .actu-lecture { transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
   .actu-lecture__contenu { flex: 1; padding: 22px 20px 8px; }
   .actu-lecture__contenu h2 { font-size: 28px; }
   .actu-lecture__texte p { font-size: 16px; }
-  .actu-lecture__pied { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); }
-  .actu-lecture__pied .actu-bouton { width: 100%; }
+  .actu-lecture__pied { gap: 8px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .actu-lecture__pied .actu-bouton { padding: 10px 18px; }
+  .actu-lecture__fermer-bas:only-child { width: 100%; }
+  .actu-lecture__nav { font-size: 13px; }
 
   .actu-toast-zone { left: 12px; right: 12px; bottom: 12px; max-width: none; }
   .actu-toast { width: 100%; }
 }
 
+/* ---------- Apparition de la section ----------
+   Info.js pose .actu-entree jusqu'à la fin de la cascade, puis .is-revealed quand la section
+   entre dans l'écran ; chaque élément .actu-reveal est décalé selon son rang (--i). */
+
+.actu-entree .actu-reveal { opacity: 0; }
+.actu-entree.is-revealed .actu-reveal {
+  opacity: 1;
+  /* backwards : l'animation ne fige rien après coup (le survol des cartes reste actif) */
+  animation: actu-reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
 /* ---------- Animations ---------- */
+
+@keyframes actu-reveal {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes actu-contenu {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
 
 @keyframes actu-pulse {
   0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.5); }
@@ -504,5 +588,11 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
   .actu-card--squelette,
   .actu-toast,
   .actu-overlay,
-  .actu-lecture { animation: none; transition: none; }
+  .actu-overlay.is-visible,
+  .actu-lecture,
+  .actu-overlay.is-visible .actu-lecture,
+  .actu-lecture__contenu,
+  .actu-entree.is-revealed .actu-reveal { animation: none; transition: none; }
+  .actu-entree .actu-reveal { opacity: 1; }
+  .actu-lecture { transform: none; }
 }
