@@ -1,54 +1,19 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import SidePanel from "./SidePanel";
+import { API_URL } from "../config";
+import { getEcho } from "../realtime";
 
 // ---------------------------------------------------------------
-// Calendrier académique : modifier uniquement ces données.
-// Dates au format AAAA-MM-JJ ; le jour de la semaine est calculé.
-// « end » + « join » : "du" (période) ou "et" (deux jours).
+// Calendrier académique : saisi dans l'administration (projet_gseminaire_gestion,
+// « Calendrier académique ») et lu sur GET /api/calendrier :
+// { annee, semestres: [{ titre, debut, fin, evenements: [{ id, date, end, join, label }] }] }, ou null.
+// Dates au format AAAA-MM-JJ ; « end » + « join » : "du" (période) ou "et" (deux jours).
+// Rechargé à chaque ouverture du panneau et en direct (canal « calendrier ») après une modification.
 // ---------------------------------------------------------------
-const ACADEMIC_YEAR = "2025-2026";
-
-const semesters = [
-  {
-    title: "Premier semestre",
-    start: "2025-09-25",
-    end: "2026-02-07",
-    events: [
-      { date: "2025-09-25", label: "Rentrée des internes" },
-      { date: "2025-09-29", label: "Réunion de tous les étudiants à 8 h, puis Messe du Saint-Esprit à 10 h" },
-      { date: "2025-10-26", label: "Fête patronale et Ordre mineur" },
-      { date: "2025-11-01", label: "La Toussaint (pas de cours)" },
-      { date: "2025-12-17", label: "Vacances de Noël (l’après-midi)" },
-      { date: "2026-01-03", label: "Rentrée des internes" },
-      { date: "2026-01-05", label: "Reprise des cours" },
-      { date: "2026-01-22", end: "2026-02-04", join: "du", label: "Examens semestriels" },
-      { date: "2026-02-06", end: "2026-02-07", join: "et", label: "Symposium" },
-    ],
-  },
-  {
-    title: "Deuxième semestre",
-    start: "2026-02-09",
-    end: "2026-06-19",
-    events: [
-      { date: "2026-02-09", label: "Début des cours" },
-      { date: "2026-03-26", label: "Vacances de Pâques" },
-      { date: "2026-04-09", label: "Rentrée des internes" },
-      { date: "2026-04-10", label: "Reprise des cours" },
-      { date: "2026-05-14", label: "Ascension (excursion)" },
-      { date: "2026-05-17", label: "Sakafom-pitiavana" },
-      { date: "2026-05-25", label: "Lundi de Pentecôte" },
-      { date: "2026-06-05", end: "2026-06-17", join: "du", label: "Examens semestriels" },
-      { date: "2026-06-11", label: "Réunion des éducateurs avec les responsables des foyers" },
-      { date: "2026-06-17", label: "Grand oral" },
-      { date: "2026-06-18", label: "Réunion des enseignants" },
-      { date: "2026-06-19", label: "Clôture de l’année académique par la Sainte Messe" },
-      { date: "2026-09-24", label: "Rentrée 2026-2027" },
-    ],
-  },
-];
 
 // --- Mise en forme des dates -----------------------------------
 
@@ -126,12 +91,45 @@ const NavCalendarButton = styled.button`
 
 const FloatingCalendar = () => {
   const [showEvents, setShowEvents] = useState(false);
+  const [calendrier, setCalendrier] = useState(null);
+  const [etat, setEtat] = useState("chargement"); // chargement | pret | erreur
+
+  const charger = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/calendrier`);
+      setCalendrier(res.data || null);
+      setEtat("pret");
+    } catch (e) {
+      // Une erreur n'efface pas un calendrier déjà affiché
+      setEtat((precedent) => (precedent === "pret" ? precedent : "erreur"));
+    }
+  }, []);
+
+  useEffect(() => {
+    charger();
+  }, [charger]);
+
+  // Ouverture du panneau : on relit, pour montrer la dernière version
+  useEffect(() => {
+    if (showEvents) charger();
+  }, [showEvents, charger]);
+
+  // Direct : l'administration a modifié le calendrier affiché
+  useEffect(() => {
+    const echo = getEcho();
+    if (!echo) return undefined;
+    echo.channel("calendrier").listen(".calendrier.maj", charger);
+    return () => echo.leaveChannel("calendrier");
+  }, [charger]);
+
+  const semesters = calendrier?.semestres || [];
+  const academicYear = calendrier?.annee;
 
   // Événements passés grisés, prochain événement mis en avant
   const today = new Date().toISOString().slice(0, 10);
-  const allEvents = semesters.flatMap((semester) => semester.events);
+  const allEvents = semesters.flatMap((semester) => semester.evenements);
   const nextEvent = allEvents.find((event) => (event.end || event.date) >= today);
-  const yearIsOver = !nextEvent;
+  const yearIsOver = allEvents.length > 0 && !nextEvent;
 
   return (
     <>
@@ -153,25 +151,35 @@ const FloatingCalendar = () => {
       <SidePanel
         isOpen={showEvents}
         onClose={() => setShowEvents(false)}
-        eyebrow={`Année ${ACADEMIC_YEAR}`}
+        eyebrow={academicYear ? `Année ${academicYear}` : "Grand Séminaire de Faliarivo"}
         title="Calendrier académique"
       >
+        {etat === "chargement" && <p className="calendar-notice" aria-busy="true">Chargement du calendrier…</p>}
+        {etat === "erreur" && (
+          <p className="calendar-notice">
+            Le calendrier n’est pas disponible pour le moment.{" "}
+            <button type="button" className="calendar-retry" onClick={charger}>Réessayer</button>
+          </p>
+        )}
+        {etat === "pret" && semesters.length === 0 && (
+          <p className="calendar-notice">Le calendrier académique sera publié prochainement.</p>
+        )}
         {yearIsOver && (
           <p className="calendar-notice">
-            L’année académique {ACADEMIC_YEAR} est terminée. Le calendrier de la nouvelle année sera publié prochainement.
+            L’année académique {academicYear} est terminée. Le calendrier de la nouvelle année sera publié prochainement.
           </p>
         )}
         {semesters.map((semester) => (
-          <section key={semester.title} className="calendar-semester">
-            <h3>{semester.title}</h3>
-            <p className="calendar-range">{formatRange(semester.start, semester.end)}</p>
+          <section key={semester.titre} className="calendar-semester">
+            <h3>{semester.titre}</h3>
+            {semester.debut && semester.fin && <p className="calendar-range">{formatRange(semester.debut, semester.fin)}</p>}
             <ul className="calendar-list">
-              {semester.events.map((event) => {
+              {semester.evenements.map((event) => {
                 const isPast = (event.end || event.date) < today;
                 const isNext = event === nextEvent;
                 return (
                   <li
-                    key={`${event.date}-${event.label}`}
+                    key={event.id}
                     className={`calendar-item${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}`}
                   >
                     <span className="calendar-date">{formatEventDate(event)}</span>
