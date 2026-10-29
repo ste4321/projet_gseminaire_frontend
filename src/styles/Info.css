@@ -493,6 +493,37 @@ body.actu-lecture-ouverte .js-gtco-nav-toggle {
 .actu-lecture__nav:hover:not(:disabled),
 .actu-lecture__nav:focus-visible { background: rgba(141, 94, 8, 0.08); }
 .actu-lecture__nav:disabled { opacity: 0.35; cursor: default; }
+.actu-lecture__contenu h2 { color: var(--title); }
+
+/* ---------- Lecture en mode sombre ----------
+   L'overlay reste dans l'espace inversé de la page (index.css) : son voile est
+   donc écrit en clair pour être rendu sombre, et le flou garde la page sombre.
+   La fenêtre est contre-inversée (index.css) : couleurs ci-dessous réelles. */
+
+html.dark-mode .actu-overlay { background: rgba(255, 255, 255, 0.62); }
+
+html.dark-mode .actu-lecture {
+  --brand: #d9a441;
+  --brand-dark: #e8bb62;
+  --title: #f4ede1;
+  --text: #d8d0c3;
+  --text-muted: #a1978a;
+  --actu-border: rgba(217, 164, 65, 0.16);
+  --actu-soft: #1e1811;
+  color-scheme: dark;
+  background: #15110b;
+  border: 1px solid rgba(217, 164, 65, 0.22);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+html.dark-mode .actu-lecture__entete {
+  background: linear-gradient(180deg, #221b12 0%, var(--actu-soft) 100%);
+}
+html.dark-mode .actu-lecture__fermer:hover,
+html.dark-mode .actu-lecture__fermer:focus-visible { background: rgba(217, 164, 65, 0.16); }
+html.dark-mode .actu-lecture__nav:hover:not(:disabled),
+html.dark-mode .actu-lecture__nav:focus-visible { background: rgba(217, 164, 65, 0.1); }
+html.dark-mode .actu-lecture .actu-bouton:hover,
+html.dark-mode .actu-lecture .actu-bouton:focus-visible { color: #15110b; }
 
 /* ---------- Mobile ---------- */
 

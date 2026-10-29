@@ -39,10 +39,12 @@ html.dark-mode .gtco-nav:not(.scrolled) {
 /* Fonds assombris (overlays) des popups/modals : ils doivent rester sombres
    dans les deux thèmes plutôt que de virer au gris clair une fois inversés.
    Comme le contenu du modal est imbriqué dans l'overlay, on lui applique le
-   même contre-filtre pour qu'il continue, lui, à suivre le thème normalement. */
+   même contre-filtre pour qu'il continue, lui, à suivre le thème normalement.
+   Exception : .actu-overlay utilise backdrop-filter, que le contre-filtre
+   ré-inverserait (page floutée claire) ; il reste dans l'espace inversé et
+   sa fenêtre .actu-lecture a sa propre palette sombre (Info.css). */
 html.dark-mode .ReactModal__Overlay,
 html.dark-mode .modal-overlay,
-html.dark-mode .actu-overlay,
 html.dark-mode .side-panel-overlay,
 html.dark-mode body.offcanvas #page::after {
   filter: invert(1) hue-rotate(180deg);
