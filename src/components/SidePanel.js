@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import '../styles/panel.css';
+import { useLangue } from '../i18n';
 
 // Panneau de lecture qui glisse depuis la droite (Formation, Présentation, Calendrier)
 const SidePanel = ({ isOpen, onClose, eyebrow, title, children, footer }) => {
+  const { t } = useLangue();
   const bodyRef = useRef(null);
 
   // Bloque le défilement de la page, ferme avec Échap, masque « retour en haut »
@@ -51,7 +53,7 @@ const SidePanel = ({ isOpen, onClose, eyebrow, title, children, footer }) => {
             type="button"
             className="side-panel__close"
             onClick={onClose}
-            aria-label="Fermer"
+            aria-label={t.panneau.fermer}
           >
             &times;
           </button>

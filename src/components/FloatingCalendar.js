@@ -6,6 +6,7 @@ import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import SidePanel from "./SidePanel";
 import { API_URL } from "../config";
 import { getEcho } from "../realtime";
+import { useLangue } from "../i18n";
 
 // ---------------------------------------------------------------
 // Calendrier académique : saisi dans l'administration (projet_gseminaire_gestion,
@@ -15,26 +16,27 @@ import { getEcho } from "../realtime";
 // Rechargé à chaque ouverture du panneau et en direct (canal « calendrier ») après une modification.
 // ---------------------------------------------------------------
 
-// --- Mise en forme des dates -----------------------------------
+// --- Mise en forme des dates, dans la langue choisie ------------
+// l : { date, periode, majuscule } fournis par useLangue() (i18n/index.js)
 
-const toDate = (iso) => new Date(`${iso}T00:00:00Z`);
-const fmt = (iso, options) =>
-  toDate(iso).toLocaleDateString("fr-FR", { timeZone: "UTC", ...options });
-const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+const fmt = (l, iso, options) => l.date(new Date(`${iso}T00:00:00Z`), { timeZone: "UTC", ...options });
 
-const formatEventDate = ({ date, end, join }) => {
-  if (!end) return capitalize(fmt(date, { weekday: "long", day: "numeric", month: "long" }));
+const formatEventDate = (l, { date, end, join }) => {
+  if (!end) return l.majuscule(fmt(l, date, { weekday: "long", day: "numeric", month: "long" }));
   const sameMonth = date.slice(0, 7) === end.slice(0, 7);
   if (join === "et") {
-    const first = fmt(date, sameMonth ? { weekday: "long", day: "numeric" } : { weekday: "long", day: "numeric", month: "long" });
-    return capitalize(`${first} et ${fmt(end, { weekday: "long", day: "numeric", month: "long" })}`);
+    const first = fmt(l, date, sameMonth ? { weekday: "long", day: "numeric" } : { weekday: "long", day: "numeric", month: "long" });
+    return l.majuscule(l.periode.et(first, fmt(l, end, { weekday: "long", day: "numeric", month: "long" })));
   }
-  const first = fmt(date, sameMonth ? { day: "numeric" } : { day: "numeric", month: "long" });
-  return `Du ${first} au ${fmt(end, { day: "numeric", month: "long" })}`;
+  const first = fmt(l, date, sameMonth ? { day: "numeric" } : { day: "numeric", month: "long" });
+  return l.periode.du(first, fmt(l, end, { day: "numeric", month: "long" }));
 };
 
-const formatRange = (start, end) =>
-  `Du ${fmt(start, { day: "numeric", month: "long", year: "numeric" })} au ${fmt(end, { day: "numeric", month: "long", year: "numeric" })}`;
+const formatRange = (l, start, end) =>
+  l.periode.du(
+    fmt(l, start, { day: "numeric", month: "long", year: "numeric" }),
+    fmt(l, end, { day: "numeric", month: "long", year: "numeric" })
+  );
 
 // ---------------------------------------------------------------
 
@@ -90,6 +92,8 @@ const NavCalendarButton = styled.button`
 
 
 const FloatingCalendar = () => {
+  const l = useLangue();
+  const c = l.t.calendrier;
   const [showEvents, setShowEvents] = useState(false);
   const [calendrier, setCalendrier] = useState(null);
   const [etat, setEtat] = useState("chargement"); // chargement | pret | erreur
@@ -134,15 +138,15 @@ const FloatingCalendar = () => {
   return (
     <>
       {!showEvents && (
-        <FloatingButton translate="no" onClick={() => setShowEvents(true)} aria-label="Calendrier académique">
+        <FloatingButton translate="no" onClick={() => setShowEvents(true)} aria-label={c.titre}>
           <FontAwesomeIcon icon={faCalendarAlt} size="lg" />
         </FloatingButton>
       )}
       <NavCalendarButton
         type="button"
         className="calendar-nav-btn"
-        aria-label="Calendrier académique"
-        title="Calendrier académique"
+        aria-label={c.titre}
+        title={c.titre}
         onClick={() => setShowEvents(true)}
       >
         <FontAwesomeIcon icon={faCalendarAlt} style={{ fontSize: 18 }} />
@@ -151,28 +155,26 @@ const FloatingCalendar = () => {
       <SidePanel
         isOpen={showEvents}
         onClose={() => setShowEvents(false)}
-        eyebrow={academicYear ? `Année ${academicYear}` : "Grand Séminaire de Faliarivo"}
-        title="Calendrier académique"
+        eyebrow={academicYear ? c.annee(academicYear) : c.defaut}
+        title={c.titre}
       >
-        {etat === "chargement" && <p className="calendar-notice" aria-busy="true">Chargement du calendrier…</p>}
+        {etat === "chargement" && <p className="calendar-notice" aria-busy="true">{c.chargement}</p>}
         {etat === "erreur" && (
           <p className="calendar-notice">
-            Le calendrier n’est pas disponible pour le moment.{" "}
-            <button type="button" className="calendar-retry" onClick={charger}>Réessayer</button>
+            {c.indisponible}{" "}
+            <button type="button" className="calendar-retry" onClick={charger}>{c.reessayer}</button>
           </p>
         )}
         {etat === "pret" && semesters.length === 0 && (
-          <p className="calendar-notice">Le calendrier académique sera publié prochainement.</p>
+          <p className="calendar-notice">{c.bientot}</p>
         )}
         {yearIsOver && (
-          <p className="calendar-notice">
-            L’année académique {academicYear} est terminée. Le calendrier de la nouvelle année sera publié prochainement.
-          </p>
+          <p className="calendar-notice">{c.terminee(academicYear)}</p>
         )}
         {semesters.map((semester) => (
           <section key={semester.titre} className="calendar-semester">
             <h3>{semester.titre}</h3>
-            {semester.debut && semester.fin && <p className="calendar-range">{formatRange(semester.debut, semester.fin)}</p>}
+            {semester.debut && semester.fin && <p className="calendar-range">{formatRange(l, semester.debut, semester.fin)}</p>}
             <ul className="calendar-list">
               {semester.evenements.map((event) => {
                 const isPast = (event.end || event.date) < today;
@@ -182,7 +184,7 @@ const FloatingCalendar = () => {
                     key={event.id}
                     className={`calendar-item${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}`}
                   >
-                    <span className="calendar-date">{formatEventDate(event)}</span>
+                    <span className="calendar-date">{formatEventDate(l, event)}</span>
                     <span className="calendar-label">{event.label}</span>
                   </li>
                 );

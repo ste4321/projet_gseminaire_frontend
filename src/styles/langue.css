@@ -1,0 +1,252 @@
+/* =======================================================
+   Choix de la langue (components/LangueSelecteur.js)
+   Deux emplacements, un seul visible à la fois :
+   - .langue--coin : coin supérieur droit de l'écran (grands écrans et téléphone)
+   - .langue--menu : dans le menu, après « Se connecter » (écrans moyens,
+     où le coin est occupé par le menu lui-même)
+   ======================================================= */
+
+.langue {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+}
+
+.langue__bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.langue__bouton:hover,
+.langue.is-open .langue__bouton {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.langue__bouton:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.langue__chevron {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+.langue.is-open .langue__chevron {
+  transform: rotate(180deg);
+}
+
+/* Barre blanche (après défilement) : bouton foncé */
+.gtco-nav.scrolled .langue__bouton {
+  border-color: #d9cfbf;
+  color: #5c5348;
+}
+
+.gtco-nav.scrolled .langue__bouton:hover,
+.gtco-nav.scrolled .langue.is-open .langue__bouton {
+  background: #f3ece0;
+  color: var(--brand-dark, #6b4600);
+}
+
+.gtco-nav.scrolled .langue__bouton:focus-visible {
+  outline-color: var(--brand, #8d5e08);
+}
+
+/* ---------- Liste des langues ---------- */
+
+.langue__liste {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 3100;
+  min-width: 190px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(31, 26, 20, 0.18);
+  animation: langue-apparition 0.16s ease-out;
+}
+
+.langue__liste[hidden] {
+  display: none;
+}
+
+/* Le menu du site impose display:inline-block à ses <li> : on rétablit une liste verticale */
+.gtco-nav .langue__liste li {
+  display: block;
+}
+
+.langue__choix {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: #3a332b;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.langue__choix:hover,
+.langue__choix:focus-visible {
+  background: #f6f0e6;
+  outline: none;
+}
+
+.langue__choix.is-active {
+  color: var(--brand-dark, #6b4600);
+  font-weight: 600;
+}
+
+.langue__choix-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 22px;
+  border-radius: 6px;
+  background: #f3ece0;
+  color: var(--brand-dark, #6b4600);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.langue__choix-nom {
+  flex: 1;
+}
+
+.langue__coche {
+  color: var(--brand, #8d5e08);
+}
+
+@keyframes langue-apparition {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .langue__liste { animation: none; }
+  .langue__chevron { transition: none; }
+}
+
+/* Mode sombre : tant que la barre survole la bannière, elle échappe à l'inversion
+   des couleurs (index.css) ; la liste suit alors le thème par son propre contre-filtre. */
+html.dark-mode .gtco-nav:not(.scrolled) .langue__liste {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ---------- Emplacements ---------- */
+
+.langue--coin,
+.gtco-nav .menu-1 ul li.langue-item {
+  display: none;
+}
+
+/* Grands écrans : dans le coin droit, en dehors du menu */
+@media screen and (min-width: 1400px) {
+  .langue--coin {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 28px;
+    transform: translateY(-50%);
+  }
+}
+
+/* Écrans moyens : dernière entrée du menu */
+@media screen and (min-width: 769px) and (max-width: 1399px) {
+  .gtco-nav .menu-1 ul li.langue-item {
+    display: inline-block;
+    margin-left: 10px;
+  }
+}
+
+/* Portables et tablettes : le menu traduit (malgache surtout) est plus long, bouton compact */
+@media screen and (min-width: 769px) and (max-width: 1279px) {
+  .gtco-nav .menu-1 ul li.langue-item {
+    margin-left: 4px;
+  }
+  .langue--menu .langue__bouton {
+    height: 34px;
+    padding: 0 6px;
+    gap: 4px;
+    border-color: transparent;
+  }
+  .langue--menu .langue__chevron {
+    display: none;
+  }
+}
+
+/* Tablettes : seul l'emblème reste à gauche, pour laisser toute la place au menu */
+@media screen and (min-width: 769px) and (max-width: 991px) {
+  .gtco-nav .brand__text {
+    display: none;
+  }
+  .gtco-nav .menu-1 ul li a {
+    letter-spacing: 0;
+  }
+}
+
+/* Téléphone : à côté des boutons calendrier, thème et menu */
+@media screen and (max-width: 768px) {
+  .langue--coin {
+    display: inline-block;
+    position: fixed;
+    top: 12px;
+    right: 138px;
+    z-index: 2001;
+  }
+
+  .langue--coin .langue__bouton {
+    height: 44px;
+    padding: 0 8px;
+    gap: 4px;
+    border: 0;
+    border-radius: 8px;
+    color: #252525;
+  }
+
+  body.at-top:not(.offcanvas) .langue--coin .langue__bouton {
+    color: #fff;
+  }
+
+  .langue--coin .langue__chevron {
+    display: none;
+  }
+
+  body.offcanvas .langue--coin {
+    display: none;
+  }
+}
+
+/* Petits téléphones : le sous-titre du logo passerait sous le bouton de langue */
+@media screen and (max-width: 480px) {
+  .brand__sub {
+    display: none !important;
+  }
+}
+
+/* Le menu mobile est une copie du menu : le sélecteur n'y fonctionnerait pas */
+#gtco-offcanvas .langue-item {
+  display: none !important;
+}

@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useActualites } from '../contexts/ActualitesContext';
+import { useLangue } from '../i18n';
+import LangueSelecteur from './LangueSelecteur';
 
 const THEME_STORAGE_KEY = 'theme';
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { nonLues: unviewedCount, loading } = useActualites();
+  const { langue, t } = useLangue();
+  const n = t.nav;
   const [heroReady, setHeroReady] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
@@ -21,8 +25,16 @@ const Nav = () => {
 
   // Le menu mobile est un clone jQuery (sans React) : on y reporte le badge à chaque changement,
   // et un point sur le bouton « menu » signale les nouveautés quand le menu est fermé.
+  // Le clone est aussi refait à chaque changement de langue, pour reprendre les libellés traduits.
   useEffect(() => {
-    const libelle = unviewedCount > 1 ? `${unviewedCount} nouvelles actualités` : 'Nouvelle actualité';
+    const libelle = n.nouvellesActus(unviewedCount);
+    const original = document.querySelector('.menu-1 > ul');
+    const copie = document.querySelector('#gtco-offcanvas > ul');
+    if (original && copie && copie.dataset.langue !== langue) {
+      const nouvelle = original.cloneNode(true);
+      nouvelle.dataset.langue = langue;
+      copie.replaceWith(nouvelle);
+    }
     const synchroniser = () => {
       document.querySelectorAll('#gtco-offcanvas a[data-nav-section="info"]').forEach((lien) => {
         let badge = lien.querySelector('.nav-badge');
@@ -41,7 +53,7 @@ const Nav = () => {
       document.querySelectorAll('.js-gtco-nav-toggle').forEach((bouton) => {
         bouton.classList.toggle('has-unread', unviewedCount > 0);
         bouton.dataset.unread = unviewedCount > 9 ? '9+' : String(unviewedCount);
-        bouton.setAttribute('aria-label', unviewedCount > 0 ? `Menu (${libelle.toLowerCase()})` : 'Menu');
+        bouton.setAttribute('aria-label', unviewedCount > 0 ? `${n.menu} (${libelle})` : n.menu);
       });
     };
     synchroniser();
@@ -49,7 +61,7 @@ const Nav = () => {
     const observateur = new MutationObserver(synchroniser);
     observateur.observe(document.body, { childList: true });
     return () => observateur.disconnect();
-  }, [unviewedCount]);
+  }, [unviewedCount, langue, n]);
 
   // Tant que la nav survole la bannière, les boutons mobiles (menu, thème)
   // doivent être clairs pour rester visibles sur la photo.
@@ -100,16 +112,17 @@ const Nav = () => {
           type="button"
           className="theme-toggle-btn theme-toggle-mobile"
           onClick={() => setIsDark((prev) => !prev)}
-          aria-label={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
-          title={isDark ? 'Mode clair' : 'Mode sombre'}
+          aria-label={isDark ? n.activerClair : n.activerSombre}
+          title={isDark ? n.modeClair : n.modeSombre}
         >
           {isDark ? <FaSun size={16} /> : <FaMoon size={16} />}
         </button>
+        <LangueSelecteur className="langue--coin" />
         <div className="container">
           <div className="row">
             <div className="col-sm-3 col-xs-12">
               <div id="gtco-logo">
-                <a href="/" className="brand" aria-label="Grand Séminaire de Théologie Faliarivo — accueil">
+                <a href="/" className="brand" aria-label={n.accueilAria}>
                   <span className="brand__emblem">
                     <img
                       src="/images/logo-gstf-48.png"
@@ -121,7 +134,7 @@ const Nav = () => {
                   </span>
                   <span className="brand__text">
                     <span className="brand__name">G.S.T.F</span>
-                    <span className="brand__sub">Grand Séminaire · Faliarivo</span>
+                    <span className="brand__sub">{n.brandSub}</span>
                   </span>
                 </a>
               </div>
@@ -134,7 +147,7 @@ const Nav = () => {
                     data-nav-section="home"
                     onClick={handleMenuClick}
                   >
-                    Accueil
+                    {n.accueil}
                   </a>
                 </li>
                 <li>
@@ -143,7 +156,7 @@ const Nav = () => {
                     data-nav-section="about"
                     onClick={handleMenuClick}
                   >
-                    À propos
+                    {n.apropos}
                   </a>
                 </li>
                 <li>
@@ -152,7 +165,7 @@ const Nav = () => {
                     data-nav-section="practice-areas"
                     onClick={handleMenuClick}
                   >
-                    Formation
+                    {n.formation}
                   </a>
                 </li>
                 <li>
@@ -161,7 +174,7 @@ const Nav = () => {
                     data-nav-section="our-team"
                     onClick={handleMenuClick}
                   >
-                    Équipe
+                    {n.equipe}
                   </a>
                 </li>
                 <li>
@@ -170,11 +183,11 @@ const Nav = () => {
                     data-nav-section="info"
                     onClick={handleMenuClick}
                   >
-                    Info
+                    {n.info}
                     {!loading && unviewedCount > 0 && (
                       <span
                         className="nav-badge"
-                        title={`${unviewedCount} nouvelle${unviewedCount > 1 ? 's' : ''} actualité${unviewedCount > 1 ? 's' : ''}`}
+                        title={n.nouvellesActus(unviewedCount)}
                       >
                         {unviewedCount > 9 ? '9+' : unviewedCount}
                       </span>
@@ -187,7 +200,7 @@ const Nav = () => {
                     data-nav-section="contact"
                     onClick={handleMenuClick}
                   >
-                    Contact
+                    {n.contact}
                   </a>
                 </li>
                 <li className="theme-toggle-item">
@@ -195,8 +208,8 @@ const Nav = () => {
                     type="button"
                     className="theme-toggle-btn"
                     onClick={() => setIsDark((prev) => !prev)}
-                    aria-label={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
-                    title={isDark ? 'Mode clair' : 'Mode sombre'}
+                    aria-label={isDark ? n.activerClair : n.activerSombre}
+                    title={isDark ? n.modeClair : n.modeSombre}
                   >
                     {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
                   </button>
@@ -209,8 +222,11 @@ const Nav = () => {
                       window.open("https://www.gestion.gstf-faliarivo.ovh", "_blank", "noopener,noreferrer");
                     }}
                   >
-                    <span>Se connecter</span>
+                    <span>{n.seConnecter}</span>
                   </a>
+                </li>
+                <li className="langue-item">
+                  <LangueSelecteur className="langue--menu" />
                 </li>
               </ul>
             </div>
@@ -232,12 +248,12 @@ const Nav = () => {
               <div className="display-t">
                 <div className="display-tc">
                   <div className={`hero-content ${heroReady ? 'is-ready' : ''}`}>
-                    <p className="hero-kicker">Antananarivo · Madagascar</p>
+                    <p className="hero-kicker">{t.hero.kicker}</p>
                     <h1>
-                      Grand Séminaire de Théologie <span>Faliarivo</span>
+                      {t.hero.titre} <span>Faliarivo</span>
                     </h1>
                     <p className="hero-quote">
-                      « Soyez toujours prêts à justifier votre espérance » <cite>(1Pi 3, 15)</cite>
+                      {t.hero.citation} <cite>{t.hero.reference}</cite>
                     </p>
                     <div className="hero-actions">
                       <a
@@ -245,14 +261,14 @@ const Nav = () => {
                         className="hero-btn hero-btn-primary"
                         onClick={(e) => scrollToSection(e, 'gtco-practice-areas')}
                       >
-                        Découvrir la formation
+                        {t.hero.decouvrir}
                       </a>
                       <a
                         href="#gtco-contact"
                         className="hero-btn hero-btn-ghost"
                         onClick={(e) => scrollToSection(e, 'gtco-contact')}
                       >
-                        Nous contacter
+                        {t.hero.contacter}
                       </a>
                     </div>
                   </div>

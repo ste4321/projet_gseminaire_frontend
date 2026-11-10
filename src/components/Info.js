@@ -1,23 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useActualites } from '../contexts/ActualitesContext';
 import '../styles/Info.css';
+import { useLangue } from '../i18n';
 
 const NB_INITIAL = 7; // 1 à la une + 6 en grille
 const DUREE_FERMETURE = 300; // ms, aligné sur la transition de sortie (Info.css)
 const DUREE_ENTREE = 1600; // ms, cascade d'apparition complète des cartes
 
-const jour = (iso) => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit' });
-const mois = (iso) => new Date(iso).toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
 const annee = (iso) => new Date(iso).getFullYear();
-const dateComplete = (iso) =>
-  new Date(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-const dateRelative = (iso) => {
+// a : textes des actualités dans la langue choisie (i18n, clé « actus »)
+const dateRelative = (iso, a) => {
   const debut = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const ecart = Math.round((debut(new Date()) - debut(new Date(iso))) / 86400000);
-  if (ecart <= 0) return "Aujourd'hui";
-  if (ecart === 1) return 'Hier';
-  if (ecart < 7) return `Il y a ${ecart} jours`;
+  if (ecart <= 0) return a.aujourdhui;
+  if (ecart === 1) return a.hier;
+  if (ecart < 7) return a.ilYa(ecart);
   return null; // au-delà, le bloc date suffit
 };
 
@@ -43,16 +41,20 @@ const origineDepuisCarte = (id) => {
 const FOCUSABLES = 'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
 
 /** Carte d'actualité (à la une ou en grille) */
-const Carte = ({ info, uneDuMoment, nouvelle, fraiche, ordre, onOuvrir }) => (
+const Carte = ({ info, uneDuMoment, nouvelle, fraiche, ordre, onOuvrir }) => {
+  const { t, date } = useLangue();
+  const a = t.actus;
+  const relative = dateRelative(info.created_at, a);
+  return (
   <article
     className={`actu-card actu-reveal ${uneDuMoment ? 'actu-card--une' : ''} ${fraiche ? 'is-fresh' : ''}`}
     data-actu-id={info.id}
     style={{ '--i': ordre }}
   >
-    <button type="button" className="actu-card__btn" onClick={() => onOuvrir(info)} aria-label={`Lire : ${info.titre}`}>
+    <button type="button" className="actu-card__btn" onClick={() => onOuvrir(info)} aria-label={a.lireAria(info.titre)}>
       <div className="actu-date" aria-hidden="true">
-        <span className="actu-date__jour">{jour(info.created_at)}</span>
-        <span className="actu-date__mois">{mois(info.created_at)}</span>
+        <span className="actu-date__jour">{date(info.created_at, { day: '2-digit' })}</span>
+        <span className="actu-date__mois">{date(info.created_at, { month: 'short' })}</span>
         {(uneDuMoment || annee(info.created_at) !== new Date().getFullYear()) && (
           <span className="actu-date__annee">{annee(info.created_at)}</span>
         )}
@@ -60,16 +62,16 @@ const Carte = ({ info, uneDuMoment, nouvelle, fraiche, ordre, onOuvrir }) => (
 
       <div className="actu-card__corps">
         <div className="actu-card__meta">
-          {uneDuMoment && <span className="actu-pill actu-pill--une">À la une</span>}
-          {nouvelle && <span className="actu-pill actu-pill--new">Nouveau</span>}
-          {dateRelative(info.created_at) && <time dateTime={info.created_at}>{dateRelative(info.created_at)}</time>}
+          {uneDuMoment && <span className="actu-pill actu-pill--une">{a.aLaUne}</span>}
+          {nouvelle && <span className="actu-pill actu-pill--new">{a.nouveau}</span>}
+          {relative && <time dateTime={info.created_at}>{relative}</time>}
         </div>
         <h3 className="actu-card__titre">{info.titre}</h3>
         {info.description && <p className="actu-card__extrait">{info.description}</p>}
         <div className="actu-card__pied">
           <span className="actu-card__auteur">{info.auteur}</span>
           <span className="actu-card__lire">
-            Lire la suite
+            {a.lireSuite}
             <svg width="14" height="14" viewBox="0 0 15 15" aria-hidden="true">
               <path d="M8.146 3.146a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L11.293 8H2.5a.5.5 0 0 1 0-1h8.793L8.146 3.854a.5.5 0 0 1 0-.708z" fill="currentColor" />
             </svg>
@@ -78,9 +80,12 @@ const Carte = ({ info, uneDuMoment, nouvelle, fraiche, ordre, onOuvrir }) => (
       </div>
     </button>
   </article>
-);
+  );
+};
 
 const Info = () => {
+  const { t, date } = useLangue();
+  const a = t.actus;
   const {
     infos, loading, error, recharger, vues, marquerLue, toutMarquerLu, nonLues,
     enDirect, arrivee, effacerArrivee, fraiches,
@@ -273,24 +278,24 @@ const Info = () => {
       <div className="container">
         <div className="row row-pb-md">
           <div className="col-md-8 col-md-offset-2 heading text-center">
-            <span className="actu-surtitre actu-reveal" style={{ '--i': 0 }}>Vie du séminaire</span>
-            <h1 id="actu-titre" className="actu-reveal" style={{ '--i': 1 }}>Actualités</h1>
-            <p className="sub actu-reveal" style={{ '--i': 2 }}>Les annonces et informations publiées par le Grand Séminaire de Faliarivo.</p>
+            <span className="actu-surtitre actu-reveal" style={{ '--i': 0 }}>{a.surtitre}</span>
+            <h1 id="actu-titre" className="actu-reveal" style={{ '--i': 1 }}>{a.titre}</h1>
+            <p className="sub actu-reveal" style={{ '--i': 2 }}>{a.sousTitre}</p>
 
             {!loading && !error && infos.length > 0 && (
               <div className="actu-statut actu-reveal" style={{ '--i': 3 }}>
                 {enDirect && (
-                  <span className="actu-direct" title="Les nouvelles actualités apparaissent sans recharger la page">
-                    <span className="actu-direct__point" aria-hidden="true"></span>En direct
+                  <span className="actu-direct" title={a.enDirectTitre}>
+                    <span className="actu-direct__point" aria-hidden="true"></span>{a.enDirect}
                   </span>
                 )}
                 {nonLues > 0 ? (
                   <>
-                    <span>{nonLues} non lue{nonLues > 1 ? 's' : ''}</span>
-                    <button type="button" className="actu-lien" onClick={toutMarquerLu}>Tout marquer comme lu</button>
+                    <span>{a.nonLues(nonLues)}</span>
+                    <button type="button" className="actu-lien" onClick={toutMarquerLu}>{a.toutLu}</button>
                   </>
                 ) : (
-                  <span>Vous êtes à jour</span>
+                  <span>{a.aJour}</span>
                 )}
               </div>
             )}
@@ -298,17 +303,17 @@ const Info = () => {
         </div>
 
         {loading ? (
-          <div className="actu-grille" aria-busy="true" aria-label="Chargement des actualités">
+          <div className="actu-grille" aria-busy="true" aria-label={a.chargement}>
             {[0, 1, 2].map((i) => <div key={i} className="actu-card actu-card--squelette" />)}
           </div>
         ) : error ? (
           <div className="actu-vide actu-reveal" style={{ '--i': 3 }}>
-            <p>{error}</p>
-            <button type="button" className="actu-bouton" onClick={recharger}>Réessayer</button>
+            <p>{a.indisponible}</p>
+            <button type="button" className="actu-bouton" onClick={recharger}>{a.reessayer}</button>
           </div>
         ) : infos.length === 0 ? (
           <div className="actu-vide actu-reveal" style={{ '--i': 3 }}>
-            <p>Aucune actualité pour le moment. Revenez bientôt !</p>
+            <p>{a.vide}</p>
           </div>
         ) : (
           <>
@@ -332,7 +337,7 @@ const Info = () => {
             {(masquees > 0 || toutAfficher) && autres.length > NB_INITIAL - 1 && (
               <div className="text-center actu-reveal" style={{ '--i': 9 }}>
                 <button type="button" className="actu-bouton" onClick={() => setToutAfficher(!toutAfficher)} aria-expanded={toutAfficher}>
-                  {toutAfficher ? 'Afficher moins' : `Voir toutes les actualités (${masquees} de plus)`}
+                  {toutAfficher ? a.afficherMoins : a.voirTout(masquees)}
                 </button>
               </div>
             )}
@@ -346,11 +351,11 @@ const Info = () => {
           <div className="actu-toast" role="status">
             <span className="actu-toast__icone" aria-hidden="true">✦</span>
             <div className="actu-toast__texte">
-              <strong>Nouvelle actualité</strong>
+              <strong>{a.nouvelle}</strong>
               <span>{arrivee.titre}</span>
             </div>
-            <button type="button" className="actu-toast__lire" onClick={lireArrivee}>Lire</button>
-            <button type="button" className="actu-toast__fermer" onClick={effacerArrivee} aria-label="Fermer l'annonce">×</button>
+            <button type="button" className="actu-toast__lire" onClick={lireArrivee}>{a.lire}</button>
+            <button type="button" className="actu-toast__fermer" onClick={effacerArrivee} aria-label={a.fermerAnnonce}>×</button>
           </div>
         )}
       </div>
@@ -367,11 +372,11 @@ const Info = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <header className="actu-lecture__entete">
-              <span className="actu-surtitre">{dateComplete(ouverte.created_at)}</span>
+              <span className="actu-surtitre">{date(ouverte.created_at, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
               {infos.length > 1 && (
                 <span className="actu-lecture__position">{position + 1} / {infos.length}</span>
               )}
-              <button ref={boutonFermer} type="button" className="actu-lecture__fermer" onClick={fermer} aria-label="Fermer">×</button>
+              <button ref={boutonFermer} type="button" className="actu-lecture__fermer" onClick={fermer} aria-label={a.fermer}>×</button>
               {progression !== null && (
                 <span className="actu-lecture__progression" style={{ transform: `scaleX(${progression})` }} aria-hidden="true" />
               )}
@@ -379,7 +384,7 @@ const Info = () => {
             {/* key : changer d'actualité remonte le contenu en haut, avec un fondu */}
             <div key={ouverte.id} ref={contenu} className="actu-lecture__contenu" onScroll={majProgression}>
               <h2 id="actu-lecture-titre">{ouverte.titre}</h2>
-              <p className="actu-lecture__auteur">Par {ouverte.auteur}</p>
+              <p className="actu-lecture__auteur">{a.par(ouverte.auteur)}</p>
               <div className="actu-lecture__texte">
                 {paragraphes(ouverte.description).map((p, i) => <p key={i}>{p}</p>)}
               </div>
@@ -393,10 +398,10 @@ const Info = () => {
                   disabled={!plusRecente}
                   title={plusRecente?.titre}
                 >
-                  <span aria-hidden="true">‹</span> Plus récente
+                  <span aria-hidden="true">‹</span> {a.plusRecente}
                 </button>
               )}
-              <button type="button" className="actu-bouton actu-lecture__fermer-bas" onClick={fermer}>Fermer</button>
+              <button type="button" className="actu-bouton actu-lecture__fermer-bas" onClick={fermer}>{a.fermer}</button>
               {infos.length > 1 && (
                 <button
                   type="button"
@@ -405,7 +410,7 @@ const Info = () => {
                   disabled={!plusAncienne}
                   title={plusAncienne?.titre}
                 >
-                  Plus ancienne <span aria-hidden="true">›</span>
+                  {a.plusAncienne} <span aria-hidden="true">›</span>
                 </button>
               )}
             </footer>

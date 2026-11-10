@@ -1,6 +1,7 @@
 import useScripts from "./hooks/useScripts";
 import Home from "./pages/Home";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LangueProvider } from "./i18n";
 
 function App() {
   useScripts([
@@ -15,11 +16,13 @@ function App() {
   ]);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <LangueProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    </LangueProvider>
   );
 }
 

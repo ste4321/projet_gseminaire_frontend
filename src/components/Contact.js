@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "./../App.css";
 import { API_URL } from "../config";
+import { useLangue } from "../i18n";
 const Contact = () => {
+    const { t } = useLangue();
+    const c = t.contact;
 
     const [notification, setNotification] = useState({ message: "", type: "" });
 
@@ -28,13 +31,13 @@ const Contact = () => {
     
             const result = await response.json();
             if (response.ok) {
-                setNotification({ message: "Message envoyé avec succès !", type: "success" });
+                setNotification({ message: c.succes, type: "success" });
                 setFormData({ name: "", email: "", message: "" });
             } else {
-                setNotification({ message: result.message || "Une erreur est survenue.", type: "error" });
+                setNotification({ message: result.message || c.erreur, type: "error" });
             }
         } catch (error) {
-            setNotification({ message: "Une erreur est survenue.", type: "error" });
+            setNotification({ message: c.erreur, type: "error" });
             console.error("Erreur :", error);
         }
     
@@ -50,8 +53,8 @@ const Contact = () => {
             <div className="container">
                 <div className="row row-pb-md">
                     <div className="col-md-8 col-md-offset-2 heading animate-box">
-                        <h1>Contactez-nous</h1>
-                        <p className="sub">Si vous ne croyez pas, vous ne comprendrez pas (Is 7, 9). </p>
+                        <h1>{c.titre}</h1>
+                        <p className="sub">{c.citation}</p>
                         {/* <p className="subtle-text animate-box">Contact</p> */}
                     </div>
                 </div>
@@ -59,19 +62,19 @@ const Contact = () => {
                     <div className="col-md-6 col-md-push-6 animate-box">
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label htmlFor="name" className="sr-only">Nom</label>
-                                <input type="text" className="form-control" placeholder="Votre nom" id="name" name="name" value={formData.name} onChange={handleChange} required />
+                                <label htmlFor="name" className="sr-only">{c.nom}</label>
+                                <input type="text" className="form-control" placeholder={c.phNom} id="name" name="name" value={formData.name} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="email" className="sr-only">Adresse e-mail</label>
-                                <input type="email" className="form-control" placeholder="Votre adresse e-mail" id="email" name="email" value={formData.email} onChange={handleChange} required />
+                                <label htmlFor="email" className="sr-only">{c.email}</label>
+                                <input type="email" className="form-control" placeholder={c.phEmail} id="email" name="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="message" className="sr-only">Message</label>
-                                <textarea name="message" id="message" className="form-control" cols="30" rows="7" placeholder="Votre message" value={formData.message} onChange={handleChange} required></textarea>
+                                <label htmlFor="message" className="sr-only">{c.message}</label>
+                                <textarea name="message" id="message" className="form-control" cols="30" rows="7" placeholder={c.phMessage} value={formData.message} onChange={handleChange} required></textarea>
                             </div>
                             <div className="form-group">
-                                <input type="submit" value="Envoyer" className="btn btn-primary" />
+                                <input type="submit" value={c.envoyer} className="btn btn-primary" />
                             </div>
                             {notification.message && (
                                 <div className={`notification ${notification.type}`}>

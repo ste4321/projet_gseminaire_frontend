@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
+import { useLangue } from "../i18n";
 
+// role : clé du libellé traduit (i18n/<langue>.js, equipe.roles)
 const equipe = [
-  { role: "Recteur", nom: "P. RAFIDISON Abdon", tel: "+261 34 10 600 04" },
-  { role: "Économe", nom: "P. RAMAROSANDRATANA Claude Rolland", tel: "+261 33 70 003 76" },
-  { role: "Animateur spirituel", nom: "P. RAKOTOMAHEFA Jean Félicien", tel: "+261 34 68 210 54" },
-  { role: "Formateur", nom: "P. RATELOARISON Jean Athanase", tel: "+261 34 41 704 80" },
-  { role: "Préfet des Études", nom: "P. RAZAFINIARIVO Rodolphe Onjaniaina", tel: "+261 34 92 920 77" },
-  { role: "Sœur intendante", nom: "Sr. RAZANAPARANY Angeline", tel: "+261 34 36 058 54" },
+  { role: "recteur", nom: "P. RAFIDISON Abdon", tel: "+261 34 10 600 04" },
+  { role: "econome", nom: "P. RAMAROSANDRATANA Claude Rolland", tel: "+261 33 70 003 76" },
+  { role: "spirituel", nom: "P. RAKOTOMAHEFA Jean Félicien", tel: "+261 34 68 210 54" },
+  { role: "formateur", nom: "P. RATELOARISON Jean Athanase", tel: "+261 34 41 704 80" },
+  { role: "etudes", nom: "P. RAZAFINIARIVO Rodolphe Onjaniaina", tel: "+261 34 92 920 77" },
+  { role: "intendante", nom: "Sr. RAZANAPARANY Angeline", tel: "+261 34 36 058 54" },
 ];
 
 // Toute l'équipe visible d'un coup ; numéros cliquables sur téléphone.
 // Les cartes apparaissent en cascade quand la section arrive à l'écran.
 const EquipeFormatrice = () => {
+  const { t } = useLangue();
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -42,11 +45,11 @@ const EquipeFormatrice = () => {
       aria-labelledby="team-list-title"
     >
       <div className="container">
-        <h2 id="team-list-title" className="team-list__title">L’équipe formatrice</h2>
+        <h2 id="team-list-title" className="team-list__title">{t.equipe.formatrice}</h2>
         <ul className="team-list__grid">
           {equipe.map((personne, index) => (
             <li key={personne.nom} className="team-list__card" style={{ "--i": index }}>
-              <p className="team-list__role">{personne.role}</p>
+              <p className="team-list__role">{t.equipe.roles[personne.role]}</p>
               <p className="team-list__name">{personne.nom}</p>
               <a className="team-list__tel" href={`tel:${personne.tel.replace(/\s/g, "")}`}>
                 <FaPhoneAlt size={12} aria-hidden="true" /> {personne.tel}
