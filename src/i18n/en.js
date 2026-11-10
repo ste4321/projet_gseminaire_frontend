@@ -227,6 +227,13 @@ const en = {
     envoyer: 'Send',
     succes: 'Your message has been sent!',
     erreur: 'Something went wrong. Please try again.',
+    envoi: 'Sending…',
+    popupTitre: 'Message sent!',
+    popupTexte: (email) => `Thank you for writing to us. We will reply as soon as possible to ${email}.`,
+    popupOk: 'OK',
+    erreurChamps: 'Please check your name, email address and message.',
+    erreurTrop: 'Too many messages sent in a short time. Please try again in a minute.',
+    erreurReseau: 'Your message could not be sent. Please check your connection and try again.',
   },
 
   calendrier: {

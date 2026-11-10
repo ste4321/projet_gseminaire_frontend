@@ -1,52 +1,96 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./../App.css";
+import "../styles/contact.css";
 import { API_URL } from "../config";
 import { useLangue } from "../i18n";
+
+// Formulaire « Contactez-nous » : le message est enregistré par l'API (POST /postContact)
+// et apparaît dans l'application de gestion, page « Messages » de l'administration.
+// Envoi réussi : fenêtre de confirmation (« nous vous répondrons… »).
+
+const FORMULAIRE_VIDE = { name: "", email: "", message: "" };
+const MAX_MESSAGE = 5000; // même limite que le serveur
+
+/** Fenêtre de confirmation après l'envoi : Échap, clic à côté ou bouton pour fermer */
+const PopupEnvoye = ({ email, c, onClose }) => {
+    const bouton = useRef(null);
+
+    useEffect(() => {
+        bouton.current?.focus();
+        const echap = (e) => e.key === "Escape" && onClose();
+        document.addEventListener("keydown", echap);
+        document.body.classList.add("contact-popup-ouverte");
+        return () => {
+            document.removeEventListener("keydown", echap);
+            document.body.classList.remove("contact-popup-ouverte");
+        };
+    }, [onClose]);
+
+    return (
+        <div className="contact-popup" onClick={onClose}>
+            <div
+                className="contact-popup__boite"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="contact-popup-titre"
+                aria-describedby="contact-popup-texte"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <span className="contact-popup__icone" aria-hidden="true">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                </span>
+                <h3 id="contact-popup-titre">{c.popupTitre}</h3>
+                <p id="contact-popup-texte">{c.popupTexte(email)}</p>
+                <button ref={bouton} type="button" className="btn btn-primary contact-popup__ok" onClick={onClose}>
+                    {c.popupOk}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 const Contact = () => {
     const { t } = useLangue();
     const c = t.contact;
 
-    const [notification, setNotification] = useState({ message: "", type: "" });
-
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        message: "",
-    });
+    const [formData, setFormData] = useState(FORMULAIRE_VIDE);
+    const [siteWeb, setSiteWeb] = useState(""); // piège à robots (champ invisible)
+    const [envoi, setEnvoi] = useState(false);
+    const [erreur, setErreur] = useState(null); // clé du message d'erreur (erreurChamps, erreurTrop, erreurReseau)
+    const [envoyeA, setEnvoyeA] = useState(null); // adresse du dernier envoi réussi : ouvre la fenêtre de confirmation
+    const fermerPopup = useCallback(() => setEnvoyeA(null), []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (erreur) setErreur(null);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (envoi) return;
+        setEnvoi(true);
+        setErreur(null);
         try {
             const response = await fetch(`${API_URL}/postContact`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
+                body: JSON.stringify({ ...formData, site_web: siteWeb }),
             });
-    
-            const result = await response.json();
             if (response.ok) {
-                setNotification({ message: c.succes, type: "success" });
-                setFormData({ name: "", email: "", message: "" });
+                setEnvoyeA(formData.email.trim());
+                setFormData(FORMULAIRE_VIDE);
             } else {
-                setNotification({ message: result.message || c.erreur, type: "error" });
+                // Messages du serveur en anglais : on affiche le nôtre, dans la langue choisie
+                setErreur(response.status === 422 ? "erreurChamps" : response.status === 429 ? "erreurTrop" : "erreurReseau");
             }
-        } catch (error) {
-            setNotification({ message: c.erreur, type: "error" });
-            console.error("Erreur :", error);
+        } catch {
+            setErreur("erreurReseau");
+        } finally {
+            setEnvoi(false);
         }
-    
-        // Effacer la notification après 5 secondes
-        setTimeout(() => {
-            setNotification({ message: "", type: "" });
-        }, 5000);
     };
-    
 
     return (
         <section id="gtco-contact" data-section="contact">
@@ -55,7 +99,6 @@ const Contact = () => {
                     <div className="col-md-8 col-md-offset-2 heading animate-box">
                         <h1>{c.titre}</h1>
                         <p className="sub">{c.citation}</p>
-                        {/* <p className="subtle-text animate-box">Contact</p> */}
                     </div>
                 </div>
                 <div className="row">
@@ -63,23 +106,28 @@ const Contact = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="name" className="sr-only">{c.nom}</label>
-                                <input type="text" className="form-control" placeholder={c.phNom} id="name" name="name" value={formData.name} onChange={handleChange} required />
+                                <input type="text" className="form-control" placeholder={c.phNom} id="name" name="name" maxLength={255} autoComplete="name" value={formData.name} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="email" className="sr-only">{c.email}</label>
-                                <input type="email" className="form-control" placeholder={c.phEmail} id="email" name="email" value={formData.email} onChange={handleChange} required />
+                                <input type="email" className="form-control" placeholder={c.phEmail} id="email" name="email" maxLength={255} autoComplete="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="message" className="sr-only">{c.message}</label>
-                                <textarea name="message" id="message" className="form-control" cols="30" rows="7" placeholder={c.phMessage} value={formData.message} onChange={handleChange} required></textarea>
+                                <textarea name="message" id="message" className="form-control" cols="30" rows="7" maxLength={MAX_MESSAGE} placeholder={c.phMessage} value={formData.message} onChange={handleChange} required></textarea>
+                            </div>
+                            {/* Invisible pour les visiteurs (et ignoré par les lecteurs d'écran) : seuls les robots le remplissent */}
+                            <div className="contact-piege" aria-hidden="true">
+                                <label htmlFor="site_web">Site web</label>
+                                <input type="text" id="site_web" name="site_web" tabIndex={-1} autoComplete="off" value={siteWeb} onChange={(e) => setSiteWeb(e.target.value)} />
                             </div>
                             <div className="form-group">
-                                <input type="submit" value={c.envoyer} className="btn btn-primary" />
+                                <button type="submit" className="btn btn-primary" disabled={envoi} aria-busy={envoi}>
+                                    {envoi ? c.envoi : c.envoyer}
+                                </button>
                             </div>
-                            {notification.message && (
-                                <div className={`notification ${notification.type}`}>
-                                    {notification.message}
-                                </div>
+                            {erreur && (
+                                <p className="contact-erreur" role="alert">{c[erreur]}</p>
                             )}
                         </form>
                     </div>
@@ -96,6 +144,7 @@ const Contact = () => {
 				</div>
                 </div>
             </div>
+            {envoyeA && <PopupEnvoye email={envoyeA} c={c} onClose={fermerPopup} />}
         </section>
     );
 };

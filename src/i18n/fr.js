@@ -226,6 +226,13 @@ const fr = {
     envoyer: 'Envoyer',
     succes: 'Message envoyé avec succès !',
     erreur: 'Une erreur est survenue.',
+    envoi: 'Envoi…',
+    popupTitre: 'Message envoyé !',
+    popupTexte: (email) => `Merci de nous avoir écrit. Nous vous répondrons dès que possible à l’adresse ${email}.`,
+    popupOk: 'D’accord',
+    erreurChamps: 'Vérifiez votre nom, votre adresse e-mail et votre message.',
+    erreurTrop: 'Trop de messages envoyés en peu de temps. Réessayez dans une minute.',
+    erreurReseau: 'Le message n’a pas pu être envoyé. Vérifiez votre connexion et réessayez.',
   },
 
   calendrier: {

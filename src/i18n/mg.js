@@ -227,6 +227,13 @@ const mg = {
     envoyer: 'Alefaso',
     succes: 'Lasa soa aman-tsara ny hafatrao!',
     erreur: 'Nisy olana nitranga. Andramo indray azafady.',
+    envoi: 'Eo am-pandefasana…',
+    popupTitre: 'Lasa ny hafatrao!',
+    popupTexte: (email) => `Misaotra anao nanoratra ho anay. Hamaly anao faran’izay haingana izahay, amin’ny adiresy ${email}.`,
+    popupOk: 'Eny',
+    erreurChamps: 'Hamarino ny anaranao, ny adiresy mailakao ary ny hafatrao.',
+    erreurTrop: 'Be loatra ny hafatra nalefa tao anatin’ny fotoana fohy. Andramo indray afaka iray minitra.',
+    erreurReseau: 'Tsy lasa ny hafatra. Hamarino ny fifandraisanao amin’ny aterineto ary andramo indray.',
   },
 
   calendrier: {

@@ -227,6 +227,13 @@ const it = {
     envoyer: 'Invia',
     succes: 'Messaggio inviato con successo!',
     erreur: 'Si è verificato un errore.',
+    envoi: 'Invio…',
+    popupTitre: 'Messaggio inviato!',
+    popupTexte: (email) => `Grazie per averci scritto. Ti risponderemo al più presto all’indirizzo ${email}.`,
+    popupOk: 'Va bene',
+    erreurChamps: 'Controlla il nome, l’indirizzo e-mail e il messaggio.',
+    erreurTrop: 'Troppi messaggi inviati in poco tempo. Riprova tra un minuto.',
+    erreurReseau: 'Non è stato possibile inviare il messaggio. Controlla la connessione e riprova.',
   },
 
   calendrier: {

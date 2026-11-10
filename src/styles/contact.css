@@ -1,0 +1,109 @@
+/* =======================================================
+   Formulaire « Contactez-nous » (components/Contact.js)
+   ======================================================= */
+
+/* Piège à robots : hors de l'écran, sans display:none (que certains robots repèrent) */
+.contact-piege {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-erreur {
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid #c0392b;
+  border-radius: 4px;
+  background: #fdf1ef;
+  color: #a5281b;
+  font-size: 15px;
+}
+
+#gtco-contact button[type="submit"][disabled] {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* ---------- Fenêtre « Message envoyé » ---------- */
+
+body.contact-popup-ouverte {
+  overflow: hidden;
+}
+
+.contact-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 16, 10, 0.55);
+  animation: contact-fondu 0.2s ease-out;
+}
+
+.contact-popup__boite {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 28px 26px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: contact-apparition 0.25s ease-out;
+}
+
+/* Mode sombre (même principe que les autres fenêtres, index.css) : le fond reste sombre,
+   la boîte suit le thème. Pas de classe .modal-overlay : celle du thème est masquée par défaut. */
+html.dark-mode .contact-popup,
+html.dark-mode .contact-popup__boite {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.contact-popup__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: #eef7ee;
+  color: #2e7d32;
+}
+
+/* #gtco-contact : plus précis que « #gtco-contact h3 » du thème (titre en blanc) */
+#gtco-contact .contact-popup__boite h3 {
+  margin: 0 0 10px;
+  color: #2b241c;
+  font-size: 24px;
+}
+
+#gtco-contact .contact-popup__boite p {
+  margin: 0 0 22px;
+  color: #5c5348;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere; /* adresses e-mail longues */
+}
+
+.contact-popup__ok {
+  min-width: 140px;
+}
+
+@keyframes contact-fondu {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes contact-apparition {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-popup,
+  .contact-popup__boite { animation: none; }
+}
