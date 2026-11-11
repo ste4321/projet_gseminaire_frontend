@@ -3,7 +3,7 @@ import { useActualites } from '../contexts/ActualitesContext';
 import '../styles/Info.css';
 import { useLangue } from '../i18n';
 
-const NB_INITIAL = 7; // 1 à la une + 6 en grille
+const NB_INITIAL = 7; // 1 à la une + 6 en grille (une page du serveur, voir ActualitesContext)
 const DUREE_FERMETURE = 300; // ms, aligné sur la transition de sortie (Info.css)
 const DUREE_ENTREE = 1600; // ms, cascade d'apparition complète des cartes
 
@@ -87,7 +87,8 @@ const Info = () => {
   const { t, date } = useLangue();
   const a = t.actus;
   const {
-    infos, loading, error, recharger, vues, marquerLue, toutMarquerLu, nonLues,
+    infos, total, loading, error, recharger, estVue, marquerLue, toutMarquerLu, nonLues,
+    plusDisponibles, chargerPlus, chargementPlus, chargerUne,
     enDirect, arrivee, effacerArrivee, fraiches,
   } = useActualites();
   const [ouverte, setOuverte] = useState(null);
@@ -171,29 +172,53 @@ const Info = () => {
     if (ancreTraitee.current || loading) return;
     ancreTraitee.current = true;
     const m = window.location.hash.match(/^#actualite-(\d+)$/);
-    const info = m && infos.find((i) => i.id === Number(m[1]));
-    if (info) {
+    if (!m) return;
+    const lire = (info) => {
+      if (!info) return;
       document.getElementById('gtco-info')?.scrollIntoView();
       setOuverte(info);
       marquerLue(info.id);
-    }
-  }, [loading, infos, marquerLue]);
+    };
+    const info = infos.find((i) => i.id === Number(m[1]));
+    if (info) lire(info);
+    else chargerUne(Number(m[1])).then(lire); // actualité plus ancienne que les pages chargées
+  }, [loading, infos, marquerLue, chargerUne]);
 
-  // L'actualité ouverte suit les modifications reçues en direct ; fermée si supprimée
+  // L'actualité ouverte suit les modifications reçues en direct ; fermée si elle disparaît de la liste
+  // (supprimée). Une actualité ouverte par un lien, hors des pages chargées, reste ouverte.
+  const idsAvant = useRef(new Set());
   useEffect(() => {
-    if (!ouverte) return;
-    const aJour = infos.find((i) => i.id === ouverte.id);
-    if (!aJour) fermer();
-    else if (aJour !== ouverte) setOuverte(aJour);
+    const ids = new Set(infos.map((i) => i.id));
+    if (ouverte) {
+      const aJour = infos.find((i) => i.id === ouverte.id);
+      if (!aJour && idsAvant.current.has(ouverte.id)) fermer();
+      else if (aJour && aJour !== ouverte) setOuverte(aJour);
+    }
+    idsAvant.current = ids;
   }, [infos, ouverte, fermer]);
 
   // Navigation entre actualités (liste triée de la plus récente à la plus ancienne)
   const position = ouverte ? infos.findIndex((i) => i.id === ouverte.id) : -1;
   const plusRecente = position > 0 ? infos[position - 1] : null;
   const plusAncienne = position >= 0 && position < infos.length - 1 ? infos[position + 1] : null;
+  const aPlusAncienne = Boolean(plusAncienne) || (position === infos.length - 1 && plusDisponibles);
+  const [suiteDemandee, setSuiteDemandee] = useState(false); // page suivante en route pour « Plus ancienne »
+  const allerPlusAncienne = () => {
+    if (plusAncienne) afficher(plusAncienne);
+    else if (aPlusAncienne && !suiteDemandee) {
+      setSuiteDemandee(true);
+      chargerPlus().then((ok) => { if (!ok) setSuiteDemandee(false); });
+    }
+  };
+  useEffect(() => {
+    if (!suiteDemandee || !plusAncienne) return;
+    setSuiteDemandee(false);
+    afficher(plusAncienne);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suiteDemandee, plusAncienne]);
 
   const actions = useRef({});
-  actions.current = { fermer, afficher, plusRecente, plusAncienne };
+  actions.current = { fermer, afficher, plusRecente, aPlusAncienne, allerPlusAncienne };
 
   // Fenêtre de lecture : blocage du défilement, boutons flottants masqués, focus, clavier
   const estOuverte = Boolean(ouverte);
@@ -214,7 +239,7 @@ const Info = () => {
       const a = actions.current;
       if (e.key === 'Escape') a.fermer();
       else if (e.key === 'ArrowLeft' && a.plusRecente) a.afficher(a.plusRecente);
-      else if (e.key === 'ArrowRight' && a.plusAncienne) a.afficher(a.plusAncienne);
+      else if (e.key === 'ArrowRight' && a.aPlusAncienne) a.allerPlusAncienne();
       else if (e.key === 'Tab' && fenetre.current) {
         // Le focus reste dans la fenêtre
         const elements = [...fenetre.current.querySelectorAll(FOCUSABLES)];
@@ -269,7 +294,17 @@ const Info = () => {
 
   const [une, ...autres] = infos;
   const affichees = toutAfficher ? autres : autres.slice(0, NB_INITIAL - 1);
-  const masquees = autres.length - affichees.length;
+  // Pas encore affichées : chargées mais repliées, ou encore sur le serveur
+  const restantes = Math.max(0, total - 1 - affichees.length);
+  const voirPlus = () => {
+    if (restantes === 0) {
+      setToutAfficher(false); // « Afficher moins »
+      return;
+    }
+    const dejaChargees = !toutAfficher && autres.length > NB_INITIAL - 1;
+    setToutAfficher(true);
+    if (!dejaChargees) chargerPlus();
+  };
 
   const classesSection = [!entreeFinie && 'actu-entree', revelee && 'is-revealed'].filter(Boolean).join(' ');
 
@@ -317,7 +352,7 @@ const Info = () => {
           </div>
         ) : (
           <>
-            <Carte info={une} uneDuMoment nouvelle={!vues.has(une.id)} fraiche={fraiches.has(une.id)} ordre={4} onOuvrir={ouvrir} />
+            <Carte info={une} uneDuMoment nouvelle={!estVue(une)} fraiche={fraiches.has(une.id)} ordre={4} onOuvrir={ouvrir} />
 
             {affichees.length > 0 && (
               <div className="actu-grille">
@@ -325,7 +360,7 @@ const Info = () => {
                   <Carte
                     key={info.id}
                     info={info}
-                    nouvelle={!vues.has(info.id)}
+                    nouvelle={!estVue(info)}
                     fraiche={fraiches.has(info.id)}
                     ordre={5 + Math.min(i, 5)}
                     onOuvrir={ouvrir}
@@ -334,10 +369,11 @@ const Info = () => {
               </div>
             )}
 
-            {(masquees > 0 || toutAfficher) && autres.length > NB_INITIAL - 1 && (
+            {(restantes > 0 || (toutAfficher && autres.length > NB_INITIAL - 1)) && (
               <div className="text-center actu-reveal" style={{ '--i': 9 }}>
-                <button type="button" className="actu-bouton" onClick={() => setToutAfficher(!toutAfficher)} aria-expanded={toutAfficher}>
-                  {toutAfficher ? a.afficherMoins : a.voirTout(masquees)}
+                <button type="button" className="actu-bouton" onClick={voirPlus} disabled={chargementPlus}
+                  aria-expanded={toutAfficher} aria-busy={chargementPlus}>
+                  {chargementPlus ? a.chargement : restantes > 0 ? a.voirPlus(restantes) : a.afficherMoins}
                 </button>
               </div>
             )}
@@ -390,7 +426,7 @@ const Info = () => {
               </div>
             </div>
             <footer className="actu-lecture__pied">
-              {infos.length > 1 && (
+              {total > 1 && (
                 <button
                   type="button"
                   className="actu-lecture__nav"
@@ -402,12 +438,12 @@ const Info = () => {
                 </button>
               )}
               <button type="button" className="actu-bouton actu-lecture__fermer-bas" onClick={fermer}>{a.fermer}</button>
-              {infos.length > 1 && (
+              {total > 1 && (
                 <button
                   type="button"
                   className="actu-lecture__nav"
-                  onClick={() => afficher(plusAncienne)}
-                  disabled={!plusAncienne}
+                  onClick={allerPlusAncienne}
+                  disabled={!aPlusAncienne || suiteDemandee}
                   title={plusAncienne?.titre}
                 >
                   {a.plusAncienne} <span aria-hidden="true">›</span>

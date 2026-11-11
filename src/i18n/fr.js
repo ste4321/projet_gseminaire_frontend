@@ -200,7 +200,7 @@ const fr = {
     nouveau: 'Nouveau',
     lireSuite: 'Lire la suite',
     lireAria: (titre) => `Lire : ${titre}`,
-    voirTout: (n) => `Voir toutes les actualités (${n} de plus)`,
+    voirPlus: (n) => `Voir plus d'actualités (${n} de plus)`,
     afficherMoins: 'Afficher moins',
     nouvelle: 'Nouvelle actualité',
     lire: 'Lire',

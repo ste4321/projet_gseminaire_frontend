@@ -201,7 +201,7 @@ const it = {
     nouveau: 'Nuovo',
     lireSuite: 'Continua a leggere',
     lireAria: (titre) => `Leggi: ${titre}`,
-    voirTout: (n) => `Vedi tutte le notizie (altre ${n})`,
+    voirPlus: (n) => `Vedi altre notizie (altre ${n})`,
     afficherMoins: 'Mostra meno',
     nouvelle: 'Nuova notizia',
     lire: 'Leggi',

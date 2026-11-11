@@ -201,7 +201,7 @@ const en = {
     nouveau: 'New',
     lireSuite: 'Read more',
     lireAria: (titre) => `Read: ${titre}`,
-    voirTout: (n) => `See all news (${n} more)`,
+    voirPlus: (n) => `See more news (${n} more)`,
     afficherMoins: 'Show less',
     nouvelle: 'New news item',
     lire: 'Read',

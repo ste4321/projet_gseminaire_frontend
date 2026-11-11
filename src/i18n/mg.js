@@ -201,7 +201,7 @@ const mg = {
     nouveau: 'Vao navoaka',
     lireSuite: 'Hamaky ny tohiny',
     lireAria: (titre) => `Hamaky: ${titre}`,
-    voirTout: (n) => `Hijery ny vaovao rehetra (${n} hafa koa)`,
+    voirPlus: (n) => `Hijery vaovao hafa koa (${n} sisa)`,
     afficherMoins: 'Hanafina ny sasany',
     nouvelle: 'Vaovao vao navoaka',
     lire: 'Hamaky',
