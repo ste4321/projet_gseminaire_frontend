@@ -3,8 +3,7 @@ import { FaMoon, FaSun } from 'react-icons/fa';
 import { useActualites } from '../contexts/ActualitesContext';
 import { useLangue } from '../i18n';
 import LangueSelecteur from './LangueSelecteur';
-
-const THEME_STORAGE_KEY = 'theme';
+import useTheme from '../hooks/useTheme';
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,16 +11,7 @@ const Nav = () => {
   const { langue, t } = useLangue();
   const n = t.nav;
   const [heroReady, setHeroReady] = useState(false);
-  const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem(THEME_STORAGE_KEY);
-    if (saved) return saved === 'dark';
-    return false; // par défaut : mode clair
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark-mode', isDark);
-    localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
-  }, [isDark]);
+  const { isDark, basculer: basculerTheme } = useTheme();
 
   // Le menu mobile est un clone jQuery (sans React) : on y reporte le badge à chaque changement,
   // et un point sur le bouton « menu » signale les nouveautés quand le menu est fermé.
@@ -111,11 +101,13 @@ const Nav = () => {
         <button
           type="button"
           className="theme-toggle-btn theme-toggle-mobile"
-          onClick={() => setIsDark((prev) => !prev)}
+          onClick={basculerTheme}
           aria-label={isDark ? n.activerClair : n.activerSombre}
           title={isDark ? n.modeClair : n.modeSombre}
         >
-          {isDark ? <FaSun size={16} /> : <FaMoon size={16} />}
+          <span key={isDark ? 'soleil' : 'lune'} className="theme-toggle-icon" aria-hidden="true">
+            {isDark ? <FaSun size={16} /> : <FaMoon size={16} />}
+          </span>
         </button>
         <LangueSelecteur className="langue--coin" />
         <div className="container">
@@ -207,11 +199,13 @@ const Nav = () => {
                   <button
                     type="button"
                     className="theme-toggle-btn"
-                    onClick={() => setIsDark((prev) => !prev)}
+                    onClick={basculerTheme}
                     aria-label={isDark ? n.activerClair : n.activerSombre}
                     title={isDark ? n.modeClair : n.modeSombre}
                   >
-                    {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
+                    <span key={isDark ? 'soleil' : 'lune'} className="theme-toggle-icon" aria-hidden="true">
+                      {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
+                    </span>
                   </button>
                 </li>
                 <li className="btn-cta">
@@ -238,9 +232,8 @@ const Nav = () => {
         id="gtco-hero"
         className={`gtco-cover ${heroReady ? 'is-ready' : ''}`}
         data-section="home"
-        data-stellar-background-ratio="0.5"
       >
-        <img src="/images/les_scolastiques.webp" alt="" className="gtco-cover-bg" loading="eager" />
+        <img src="/images/les_scolastiques.webp" alt="" className="gtco-cover-bg" loading="eager" fetchPriority="high" />
         <div className="overlay"></div>
         <div className="container">
           <div className="row">

@@ -17,7 +17,29 @@ code {
 html.dark-mode {
   background: #fff;
   filter: invert(1) hue-rotate(180deg);
-  transition: filter 0.3s ease;
+}
+
+/* Pendant la bascule : aucune transition CSS (voir hooks/useTheme.js).
+   Une transition sur le filtre de la page faisait clignoter la bannière et les
+   images, dont le contre-filtre, lui, s'appliquait d'un coup. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+
+/* Bascule animée (navigateurs compatibles) : la nouvelle apparence s'étend en
+   cercle depuis le bouton, par-dessus l'ancienne. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* L'écran de chargement garde ses vraies couleurs (fond sombre défini dans index.html) */
+html.dark-mode .gtco-loader {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 html.dark-mode img:not(.gtco-cover-bg),
@@ -71,6 +93,31 @@ html.dark-mode .side-panel {
 
 .theme-toggle-btn:hover {
   color: #8d5e08;
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid #d9a441;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* Lune ↔ soleil : l'icône pivote en apparaissant */
+.theme-toggle-icon {
+  display: inline-flex;
+  animation: theme-icon-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes theme-icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-icon {
+    animation: none;
+  }
 }
 
 /* Sur desktop : bouton dans la barre de nav normale. */

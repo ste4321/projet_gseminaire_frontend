@@ -25,12 +25,6 @@
 
 
 
-	var parallax = function() {
-		if ( !isMobile.any()) {
-			$(window).stellar();
-		}
-	};
-
 	var mobileMenuOutsideClick = function() {
 
 		$(document).click(function (e) {
@@ -325,17 +319,13 @@
 	};
 
 
-	// Loading page
-	var loaderPage = function() {
-		$(".gtco-loader").fadeOut("slow");
-	};
+	// L'écran de chargement est retiré par React (App.js), sans attendre ces scripts.
 
 	
 
 
 	
 	$(function(){
-		parallax();
 		mobileMenuOutsideClick();
 		header();
 		navigation();
@@ -345,7 +335,6 @@
 		contentWayPoint();
 		dropdown();
 		goToTop();
-		loaderPage();
 	});
 
 

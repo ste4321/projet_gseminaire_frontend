@@ -335,9 +335,8 @@ html.dark-mode body.at-top:not(.offcanvas) .calendar-nav-btn {
 
 /* ---------- Écran de chargement : sécurité ---------- */
 
-/* main.js masque normalement l'écran au chargement. Si un script jQuery
-   échoue (réseau coupé…), il resterait affiché et bloquerait tout le site ; sur mobile lent, l'attente
-   serait longue : on le retire donc de toute façon au bout de 3 secondes. */
+/* React masque l'écran dès que la page est affichée (voir App.js). Par sécurité,
+   s'il restait affiché pour une raison imprévue, on le retire de toute façon au bout de 3 secondes. */
 .gtco-loader {
   animation: loader-failsafe 0.4s ease 3s forwards;
 }
